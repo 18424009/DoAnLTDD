@@ -15,6 +15,7 @@ public class Explosion extends Sprite {
     private ShouldHide shouldHide;
 
     public Explosion(TankSoundManager soundManager) {
+
         super(0, 0);
 
         this.setDegree(0.f);
@@ -43,13 +44,33 @@ public class Explosion extends Sprite {
 
     @Override
     public void update(int time) {
+        if (isVisible) {
+            super.update(time);
+            shouldHide();
+        }
+
     }
 
     public void shouldHide() {
+        if (currentAnimation().getCurrFrameIndex() >= TankResourceManager.Explosions.length - 1) {
+            isVisible = false;
+            currentAnimation().setCurrFrameIndex(0);
+            currentAnimation().setAnimTime(0);
+            if(shouldHide != null){
+                shouldHide.shouldHide(this);
+            }
+        }
     }
 
     @Override
     public void draw(Canvas g, float x, float y) {
+        if (isVisible) {
+            Matrix matrix = new Matrix();
+            matrix.postTranslate(-currentAnimation().getImage().getWidth() / 2, -currentAnimation().getImage().getHeight() / 2);
+            matrix.postRotate(degree);
+            matrix.postTranslate(x, y);
+            g.drawBitmap(currentAnimation().getImage(), matrix, null);
+        }
     }
 
 }

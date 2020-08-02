@@ -244,4 +244,35 @@ public class TankSoundManager {
     public static void stopMusic(){
         if (music!=null)music.stop();
     }
+    public static void setMusicEnabled(boolean enabled){
+        if (music==null)return;
+        musicEnabled=enabled;
+        if (enabled){
+            music.play();
+        }else{
+            music.stop();
+        }
+    }
+
+    public static void setSoundEnabled(boolean enabled){
+        soundEnabled=enabled;
+    }
+
+    public static float getSoundVolume() {
+        return soundVolume;
+    }
+
+    public static void setSoundVolume(float volume) {
+        soundVolume = volume;
+    }
+
+    public static float getMusicVolume() {
+        return musicVolume;
+    }
+
+    public static void setMusicVolume(float volume) {
+        musicVolume = volume;
+        if (music!=null)music.setVolume(musicVolume);
+    }
+
 }

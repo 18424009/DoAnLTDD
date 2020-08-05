@@ -1,4 +1,4 @@
-package com.game.tank.tankGame.objects.base.core;
+package com.game.tank.tankGame.core;
 
 import android.app.Activity;
 import android.graphics.Bitmap;

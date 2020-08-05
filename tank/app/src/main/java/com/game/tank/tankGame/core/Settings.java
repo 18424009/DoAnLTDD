@@ -1,11 +1,11 @@
-package com.game.tank.tankGame.objects.base.core;
+package com.game.tank.tankGame.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.view.KeyEvent;
-import android.content.SharedPreferences.Editor;
 
 import com.tb.tanks.tankGame.objects.tank.Tank;
 import com.tb.tanks.tankGame.preferences.PreferenceConstants;
@@ -110,7 +110,7 @@ public class Settings {
         if (highScores[i]<newHighScore){
             highScores[i]=newHighScore;
             SharedPreferences sharedPref = context.getSharedPreferences(PreferenceConstants.PREFERENCE_SCORE_NAME, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
+            Editor editor = sharedPref.edit();
             editor.putInt("levelScore"+i, highScores[i]);
             editor.commit();
             return true;
@@ -123,7 +123,7 @@ public class Settings {
         if (recodTimes[i]>newTime){
             recodTimes[i]=newTime;
             SharedPreferences sharedPref = context.getSharedPreferences(PreferenceConstants.PREFERENCE_SCORE_NAME, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
+            Editor editor = sharedPref.edit();
             editor.putInt("levelTime"+i, recodTimes[i]);
             editor.commit();
             return true;
@@ -134,7 +134,7 @@ public class Settings {
 
     public static void saveScores(){
         SharedPreferences sharedPref = context.getSharedPreferences("highScores", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
+        Editor editor = sharedPref.edit();
         for (int i=0; i<highScores.length;i++){
             editor.putInt("levelScore"+i, highScores[i]);
             editor.putInt("levelTime"+i, recodTimes[i]);

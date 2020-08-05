@@ -24,4 +24,6 @@ public class GameRenderer {
         // use this if the tile size isn't a power of 2:
         //return numTiles * TILE_SIZE;
     }
+
+    
 }

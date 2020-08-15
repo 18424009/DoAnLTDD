@@ -1,6 +1,7 @@
 package com.game.tank.tankGame.core.tile;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 
 import com.game.tank.tankGame.core.animation.Animatible;
 import com.game.tank.tankGame.core.animation.Animation;
@@ -24,5 +25,49 @@ public class Tile extends Animatible {
 
     public Tile(int pixelX, int pixelY, Bitmap img) {
         this(pixelX, pixelY, null, img);
+    }
+
+    public void draw(Canvas g, float pixelX, float pixelY) {
+        g.drawBitmap(getImage(), pixelX, pixelY, null);
+    }
+
+    public void draw(Canvas g, float pixelX, float pixelY, float offsetX, float offsetY) {
+        draw(g, pixelX + offsetX, pixelY + offsetY);
+    }
+
+    public Bitmap getImage() {
+        return (currentAnimation() == null) ? img : currentAnimation().getImage();
+    }
+
+    public float getPixelX() {
+        return pixelX;
+    }
+
+    public float getPixelY() {
+        return pixelY;
+    }
+
+    public int getWidth() {
+        return getImage().getWidth();
+    }
+
+    public int getHeight() {
+        return getImage().getHeight();
+    }
+
+    public int getTileX() {
+        return tileX;
+    }
+
+    public void setTileX(int tileX) {
+        this.tileX = tileX;
+    }
+
+    public int getTileY() {
+        return tileY;
+    }
+
+    public void setTileY(int tileY) {
+        this.tileY = tileY;
     }
 }

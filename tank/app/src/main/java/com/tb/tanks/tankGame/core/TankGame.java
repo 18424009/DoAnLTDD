@@ -1,4 +1,4 @@
-package com.game.tanks.tankGame.core;
+package com.tb.tanks.tankGame.core;
 
 import com.tb.tanks.framework.Screen;
 import com.tb.tanks.framework.gfx.AndroidGame;

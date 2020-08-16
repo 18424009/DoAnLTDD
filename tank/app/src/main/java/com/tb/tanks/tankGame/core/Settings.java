@@ -1,4 +1,4 @@
-package com.game.tanks.tankGame.core;
+package com.tb.tanks.tankGame.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;

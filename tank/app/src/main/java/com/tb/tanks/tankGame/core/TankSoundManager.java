@@ -1,7 +1,8 @@
-package com.game.tanks.tankGame.core;
+package com.tb.tanks.tankGame.core;
 
 import android.app.Activity;
 
+import com.tb.tanks.framework.Music;
 import com.tb.tanks.framework.Sound;
 
 import java.util.Random;

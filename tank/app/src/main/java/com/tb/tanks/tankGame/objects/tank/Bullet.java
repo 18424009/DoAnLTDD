@@ -1,9 +1,9 @@
-package com.game.tanks.tankGame.objects.tank;
+package com.tb.tanks.tankGame.objects.tank;
 
 import android.graphics.PointF;
 
-import com.game.tanks.tankGame.core.TankSoundManager;
-import com.game.tanks.tankGame.core.animation.Animation;
+import com.tb.tanks.tankGame.core.TankSoundManager;
+import com.tb.tanks.tankGame.core.animation.Animation;
 
 public class Bullet {
     private static final int ANIM_TIME = 125;

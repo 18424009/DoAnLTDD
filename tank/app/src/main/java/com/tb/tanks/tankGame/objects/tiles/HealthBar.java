@@ -1,9 +1,9 @@
-package com.game.tanks.tankGame.objects.tiles;
+package com.tb.tanks.tankGame.objects.tiles;
 
 import android.graphics.Bitmap;
 
-import com.game.tanks.tankGame.core.TankResourceManager;
-import com.game.tanks.tankGame.core.TankSoundManager;
+import com.tb.tanks.tankGame.core.TankResourceManager;
+import com.tb.tanks.tankGame.core.TankSoundManager;
 
 public class HealthBar  {
     private static final int ANIM_TIME = 125;

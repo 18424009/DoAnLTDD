@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 
+import com.game.tank.tankGame.objects.tank.Tank;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,5 +90,40 @@ public class TileMap {
                 return null;
             }
         }
+    }
+
+    /**
+     * Sets tiles[x][y] equal to parameter tile.
+     * This is used to set animated GameTiles.
+     */
+    public void setTile(int x, int y, GameTile tile) {
+        tiles[x][y] = tile;
+    }
+
+    /**
+     * Sets tiles[x][y] equal to a new Tile with no animation and the constant Image img.
+     * This is used to set non-animated GameTiles.
+     */
+    public void setTile(int x, int y, Bitmap img) {
+        tiles[x][y] = new GameTile(x, y, null, img);
+    }
+
+    /**
+     * @return the player sprite.
+     */
+    public Tank getPlayer() {
+        return player;
+    }
+
+    public Tank getPlayerOther() {
+        return playerOther;
+    }
+
+    public void clearBookMarks(){
+        bookMarks.clear();
+    }
+
+    public void addBookMark(Point pt){
+        bookMarks.add(pt);
     }
 }

@@ -1,10 +1,10 @@
-package com.game.tanks.tankGame.core.tile;
+package com.tb.tanks.tankGame.core.tile;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-import com.game.tanks.tankGame.core.animation.Animatible;
-import com.game.tanks.tankGame.core.animation.Animation;
+import com.tb.tanks.tankGame.core.animation.Animatible;
+import com.tb.tanks.tankGame.core.animation.Animation;
 
 public class Tile extends Animatible {
 

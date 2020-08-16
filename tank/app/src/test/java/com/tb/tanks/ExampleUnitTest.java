@@ -1,4 +1,4 @@
-package com.game.tanks;
+package com.tb.tanks;
 
 import org.junit.Test;
 

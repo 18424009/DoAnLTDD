@@ -1,6 +1,6 @@
-package com.game.tanks.tankGame.core.animation;
+package com.tb.tanks.tankGame.core.animation;
 
-import com.game.tanks.tankGame.core.TankSoundManager;
+import com.tb.tanks.tankGame.core.TankSoundManager;
 
 public class CollidableObject extends Sprite{
 

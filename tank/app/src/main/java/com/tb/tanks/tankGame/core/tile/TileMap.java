@@ -1,4 +1,4 @@
-package com.game.tanks.tankGame.core.tile;
+package com.tb.tanks.tankGame.core.tile;
 
 import android.graphics.Bitmap;
 import android.graphics.Point;

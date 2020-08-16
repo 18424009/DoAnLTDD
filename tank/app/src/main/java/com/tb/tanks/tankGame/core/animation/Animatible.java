@@ -1,4 +1,4 @@
-package com.game.tanks.tankGame.core.animation;
+package com.tb.tanks.tankGame.core.animation;
 
 import android.graphics.Canvas;
 

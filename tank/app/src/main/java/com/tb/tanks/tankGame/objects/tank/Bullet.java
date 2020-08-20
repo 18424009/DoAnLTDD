@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 
-
 import com.tb.tanks.physic.RecBody2D;
 import com.tb.tanks.tankGame.core.TankResourceManager;
 import com.tb.tanks.tankGame.core.TankSoundManager;
@@ -35,6 +34,8 @@ public class Bullet extends Sprite {
         points[2] = new PointF(6, 10);
 
         bodyToHit2D = new RecBody2D(points, new PointF(0, 0), this.degree);
+
+
 
         idleBullet = new Animation(ANIM_TIME).addFrame(TankResourceManager.Bullet1);
         setAnimation(idleBullet);
@@ -78,5 +79,52 @@ public class Bullet extends Sprite {
     public boolean isBeforeVisible() {
         return beforeVisible;
     }
+
+    public FireShotImpact getFireShotImpact() {
+        return fireShotImpact;
+    }
+
+    public void update(TileMap map, float time) {
+        x += time*speed*(float)Math.sin(Math.toRadians(degree));
+        y -= time*speed*(float)Math.cos(Math.toRadians(degree));
+//        bodyToHit2D.Update();
+//        bodyToHit2D.setParentX(x);
+//        bodyToHit2D.setParentY(y);
+    }
+
+    @Override
+    public void setX(float x) {
+        super.setX(x);
+        bodyToHit2D.setParentX(x);
+
+    }
+
+    @Override
+    public void setY(float y) {
+        super.setY(y);
+        bodyToHit2D.setParentY(y);
+    }
+
+    @Override
+    public void setDegree(float degree) {
+        super.setDegree(degree);
+        if(!fireShotImpact.isVisible())
+            fireShotImpact.setDegree(degree);
+        bodyToHit2D.setAngle(degree);
+    }
+
+    @Override
+    public void draw(Canvas g, float x, float y) {
+        if(isVisible){
+            Matrix matrix = new Matrix();
+            matrix.postTranslate(-currentAnimation().getImage().getWidth() / 2 , -currentAnimation().getImage().getHeight() / 2);
+            matrix.postRotate(degree);
+            matrix.postTranslate(x, y);
+            g.drawBitmap(currentAnimation().getImage(), matrix, null);
+            bodyToHit2D.draw(g, x, y);
+        }
+
+    }
+
 
 }

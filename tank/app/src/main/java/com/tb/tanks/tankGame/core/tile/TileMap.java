@@ -5,6 +5,8 @@ import android.graphics.Point;
 import android.graphics.Rect;
 
 import com.game.tank.tankGame.objects.tank.Tank;
+import com.tb.tanks.tankGame.objects.base.Creature;
+import com.tb.tanks.tankGame.objects.tiles.SlopedTile;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -125,5 +127,91 @@ public class TileMap {
 
     public void addBookMark(Point pt){
         bookMarks.add(pt);
+    }
+
+    public Point getRecentbookMarkLocation(){
+        Point p=new Point(2,10);
+
+        return p;
+    }
+    public Point getbookMarkLocation(int x , int Y){
+        Point p=new Point(2,2);
+        for (Point pt: bookMarks){
+            if (pt.x>x) p=pt;
+        }
+        return p;
+    }
+    /**
+     * Sets the player sprite for this map.
+     */
+    public void setPlayer(Tank player) {
+        this.player = player;
+        player.map=this;
+    }
+
+    public void setPlayerOther(Tank playerOther) {
+        this.playerOther = playerOther;
+        playerOther.map=this;
+    }
+
+    /**
+     * @return a List containing every Creature in this map.
+     */
+    public List<Creature> creatures() {
+        return creatures;
+    }
+
+    /**
+     * @return a List containing Creatures to add to this map after the next game update.
+     */
+    public List<Creature> creaturesToAdd() {
+        return creaturesToAdd;
+    }
+
+    /**
+     * @return a List containing animated Tile in this map.
+     */
+    public List<GameTile> animatedTiles() {
+        return animatedTiles;
+    }
+
+    /**
+     * @return a List containing every SlopedTile in this map.
+     */
+    public List<SlopedTile> slopedTiles() {
+        return slopedTiles;
+    }
+
+    /**
+     * @return a List containing every relevant Creature in this map.
+     *
+     * A 'relevant Creature' is a Creature that the current frame cares about.
+     * This is generally creatures on screen or creatures that need to be updated globally.
+     */
+    public List<Creature> relevantCreatures() {
+        return relevantCreatures;
+    }
+
+    /**
+     * @return a List containing bookmarks in this map.
+     */
+    public List<Point> bookMarks() {
+        return bookMarks;
+    }
+
+    public void addWaterZone(Rect zone) {
+        waterZones.add(zone);
+    }
+
+    public List<Rect> waterZones() {
+        return waterZones;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

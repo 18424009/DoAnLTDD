@@ -61,7 +61,6 @@ public class HealthBar  {
     public void setVisible(boolean visible) {
         isVisible = visible;
     }
-    }
 
     public float getScaleY() {
         return scaleY;

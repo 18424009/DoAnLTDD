@@ -1,14 +1,24 @@
 package com.tb.tanks.tankGame.objects.base;
 
+import android.graphics.Point;
+import android.graphics.RectF;
+
 import com.tb.tanks.tankGame.core.TankSoundManager;
 import com.tb.tanks.tankGame.core.animation.CollidableObject;
+import com.tb.tanks.tankGame.core.animation.Sprite;
+import com.tb.tanks.tankGame.core.tile.GameTile;
 import com.tb.tanks.tankGame.core.tile.TileMap;
 
 
 public class Creature extends CollidableObject {
 
+    protected static int xCollideOffset = 2;
+    protected static int offMapOffset = 15;
+    protected static float GRAVITY = .0007f; //0.0008f
+    protected float gravityEffect = .20f;
 
     public static int WAKE_UP_VALUE_DOWN_RIGHT = 30;
+    public static int WAKE_UP_VALUE_UP_LEFT = -3;
 
     private boolean isAlwaysRelevant;
     private boolean isAlive;
@@ -29,13 +39,6 @@ public class Creature extends CollidableObject {
         this(pixelX, pixelY, null);
     }
 
-    /**
-     * @effects Creates a new Creature at the given pixelX, pixelY position that is capable
-     * of producing sounds from the soundManager.
-     *
-     * True: Collidable, Alive, Sleeping, Flipped.
-     * False: OnScreen, Item, Platform, Relevant.
-     */
     public Creature(int pixelX, int pixelY, TankSoundManager soundManager) {
         super(pixelX, pixelY, soundManager);
         setIsCollidable(true);
@@ -48,122 +51,122 @@ public class Creature extends CollidableObject {
         isAlwaysRelevant = false;
     }
 
-    /**
-     * @return true if this creature is a Platform, false otherwise.
-     */
+
     public boolean isPlatform() {
         return isPlatform;
     }
 
-    /**
-     * @modifies the platform status of this Creature.
-     */
+
     public void setIsPlatform(boolean isPlatform) {
         this.isPlatform = isPlatform;
     }
 
-    /**
-     * @return true if this creature is an Item, false otherwise.
-     */
     public boolean isItem() {
         return isItem;
     }
 
-    /**
-     * @modifies the item status of this Creature (items do not collide with other items/ creatures ex. mushroom).
-     */
     public void setIsItem(boolean isItem) {
         this.isItem = isItem;
     }
 
-    /**
-     * @return true if this creature is flipped, false otherwise.
-     */
     public boolean isFlipped() {
         return isFlipped;
     }
 
-    /**
-     * @modifies the flipped status of this Creature.
-     */
     public void setIsFlipped(boolean isFlipped) {
         this.isFlipped = isFlipped;
     }
 
-    /**
-     * @return true if this creature is sleeping, false otherwise.
-     */
     public boolean isSleeping() {
         return isSleeping;
     }
 
-    /**
-     * @modifies the sleeping status of this creature to false.
-     */
     public void wakeUp() {
         isSleeping = false;
     }
 
-    /**
-     * @modifies the sleeping status of this creature to false.
-     * @param isLeft true if creative should begin moving left
-     */
     public void wakeUp(boolean isLeft) {
         isSleeping = false;
     }
 
-    /**
-     * @return true if this creature is alive, false otherwise.
-     */
     public boolean isAlive() {
         return isAlive;
     }
 
-    /**
-     * @modifies the life state of this creature (alive or dead) to dead.
-     */
     public void kill() {
         isAlive = false;
     }
 
-    /**
-     * @return true if this creature is a Platform, false otherwise.
-     */
     public boolean isAlwaysRelevant() {
         return isAlwaysRelevant;
     }
 
-    /**
-     * @modifies the platform status of this Creature.
-     */
     public void setIsAlwaysRelevant(boolean isAlwaysRelevant) {
         this.isAlwaysRelevant = isAlwaysRelevant;
     }
 
-    /**
-     * @return true if this creature is invisible, false otherwise.
-     */
     public boolean isInvisible() {
         return isInvisible;
     }
 
-    /**
-     * @modifies the invisible status of this Creature.
-     */
     public void setIsInvisible(boolean isInvisible) {
         this.isInvisible = isInvisible;
     }
 
-
     public void jumpedOn() { }
     public void flip() { }
 
-    /**
-     * checks if two overlapping creatures actually collide or not (if their
-     * velocity of approach is positive they are said to be collided else they are separating from each other)
-     * @param c
-     * @return
-     */
+    // for tile collisions
+    public void xCollide(Point p) {
+        if(dx > 0) {
+            x = x - xCollideOffset;
+        } else {
+            x = x + xCollideOffset;
+        }
+        dx = -dx;
+    }
+
+    // for creature collisions
+    public void creatureXCollide() {
+        if(dx > 0) {
+            x = x - xCollideOffset;
+        } else {
+            x = x + xCollideOffset;
+        }
+        dx = -dx;
+    }
+
+    public static Collision tileCollisionX(GameTile tile, Sprite s) {
+        if(s.getX() > tile.getPixelX()) {
+            return Collision.WEST;
+        } else {
+            return Collision.EAST;
+        }
+    }
+
+    public static Collision tileCollisionY(GameTile tile, Sprite s) {
+        if(s.getY() < tile.getPixelY()) {
+            return Collision.NORTH;
+        } else {
+            return Collision.SOUTH;
+        }
+    }
+
+    public void updateCreature(TileMap map, int time) {
+
+    }
+    protected void useAI(TileMap map) {
+		/* don't let it go beyond mapfall
+		if (x <= 0 || x > map.getWidth() * 16) {
+			this.xCollide(null);
+		}
+		*/
+    }
+    
+    public void creatureCollision(Creature creature) {
+
+    }
+
     private boolean xCollideWithCreature(Creature c){
         if (x<c.getX()){
             if (dx-c.dx>0) return true;
@@ -173,4 +176,25 @@ public class Creature extends CollidableObject {
         return false;
 
     }
+
+    public float getGravityFactor() {
+        return gravityFactor;
+    }
+
+    public void setGravityFactor(float gravityFactor) {
+        this.gravityFactor = gravityFactor;
+    }
+
+    private String getBonusInfo(int creatureHitCount){
+        return "INCREDIBLE !!!";
+
+    }
+
+    void coll(){
+        RectF a = new RectF (0,0,3,3);
+        RectF  b = new RectF (1,0,3,3);
+        a.intersect(b);
+    }
+
+
 }

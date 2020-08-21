@@ -1,11 +1,15 @@
 package com.tb.tanks.tankGame.objects.tiles;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 
 import com.tb.tanks.tankGame.core.TankResourceManager;
 import com.tb.tanks.tankGame.core.TankSoundManager;
+import com.tb.tanks.tankGame.core.animation.Sprite;
+import com.tb.tanks.tankGame.core.tile.TileMap;
 
-public class HealthBar  {
+public class HealthBar extends Sprite {
     private static final int ANIM_TIME = 125;
     private String id;
     private Bitmap bgHeath;
@@ -19,9 +23,12 @@ public class HealthBar  {
 
     public HealthBar(TankSoundManager soundManager) {
 
+        super(0, 0);
+
         bgHeath = TankResourceManager.bgHeath;
         heathGreen = TankResourceManager.heathGreen;
 
+        this.setDegree(0.f);
     }
 
     public String getId() {
@@ -62,6 +69,10 @@ public class HealthBar  {
         isVisible = visible;
     }
 
+    public void update(TileMap map, float time) {
+
+    }
+
     public float getScaleY() {
         return scaleY;
     }
@@ -78,4 +89,41 @@ public class HealthBar  {
         this.scaleX = scaleX;
     }
 
+
+
+    @Override
+    public void setX(float x) {
+        super.setX(x);
+
+    }
+
+    @Override
+    public void setY(float y) {
+        super.setY(y);
+    }
+
+    @Override
+    public void setDegree(float degree) {
+        super.setDegree(degree);
+    }
+
+    @Override
+    public void draw(Canvas g, float x, float y) {
+        if(isVisible){
+            Matrix matrix = new Matrix();
+            Matrix matrix1 = new Matrix();
+
+            matrix.postTranslate(-bgHeath.getWidth() / 2 , -bgHeath.getHeight() / 2);
+            matrix.postRotate(degree);
+            matrix.postTranslate(x, y);
+            g.drawBitmap(bgHeath, matrix, null);
+
+            matrix1.setScale(scaleX, scaleY);
+            matrix1.postTranslate(-bgHeath.getWidth() / 2 , -bgHeath.getHeight() / 2);
+            matrix1.postRotate(degree);
+            matrix1.postTranslate(x, y + 3);
+            g.drawBitmap(heathGreen, matrix1, null);
+        }
+
+    }
 }

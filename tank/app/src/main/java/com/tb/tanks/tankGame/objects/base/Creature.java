@@ -162,7 +162,7 @@ public class Creature extends CollidableObject {
 		}
 		*/
     }
-    
+
     public void creatureCollision(Creature creature) {
 
     }

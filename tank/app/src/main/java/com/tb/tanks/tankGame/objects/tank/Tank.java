@@ -105,6 +105,21 @@ public class Tank extends Sprite {
         idleTank = new Animation(ANIM_TIME).addFrame(TankResourceManager.Tank);
         setAnimation(idleTank);
 
+        for (int i = 0; i < 10; i++) {
+            Bullet bll = new Bullet(soundManager);
+            bll.setDegree(degree);
+            bll.setX(this.x);
+            bll.setY(this.y);
+            bullets.push(bll);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            FireShotFlame fireShotFlame = new FireShotFlame(soundManager);
+            fireShotFlame.setDegree(degree);
+            fireShotFlame.setX(this.x);
+            fireShotFlame.setY(this.y);
+            fireShotFlames.add(fireShotFlame);
+        }
     }
 
     public HealthBar getHealthBar() {
@@ -211,6 +226,31 @@ public class Tank extends Sprite {
         return small;
     }
 
+    public boolean getHasFire() {
+        return hasFire;
+    }
+
+    public void setHasFire(boolean hasFire) {
+        if(hasFire && isAlive){
+            long now = System.currentTimeMillis();
+            long deltaFire = now - startFire;
+            //System.out.println("deltaTime: " + deltaFire);
+            if( deltaFire > timeFire){
+                this.hasFire = hasFire;
+                startFire = System.currentTimeMillis();
+                for (FireShotFlame fireShotFlame : fireShotFlames) {
+                    if (!fireShotFlame.isVisible()) {
+                        fireShotFlame.setVisible(true);
+                        break;
+                    }
+                }
+            }
+        }
+        else{
+            this.hasFire = false;
+        }
+    }
+
     @Override
     public void draw(Canvas g, float x, float y, float offsetX, float offsetY) {
         if(isAlive) {
@@ -219,6 +259,20 @@ public class Tank extends Sprite {
             bodyToHit2D.draw(g, x, y);
         }
     }
+
+    public void drawFireShotFlames(Canvas g, float x, float y){
+        for (FireShotFlame fireShotFlame : fireShotFlames) {
+            fireShotFlame.draw(g, x + fireShotFlame.getX(), y + fireShotFlame.getY());
+        }
+    }
+
+    public void drawBullets(Canvas g, float x, float y) {
+        for (Bullet bll : bullets) {
+            bll.draw(g, x + bll.getX(), y + bll.getY());
+            bll.getFireShotImpact().draw(g,x + bll.getFireShotImpact().getX(), y + bll.getFireShotImpact().getY());
+        }
+    }
+
 
     public void setIsRotate(boolean rotate) {
         this.isRotate = rotate;
@@ -256,6 +310,11 @@ public class Tank extends Sprite {
         return "{playerID: " + this.getPlayerID() + ", isFire: true, TYPE_MESSAGE: "+ MESSAGE_PLAYER_INPUT_FIRE +"}" ;
     }
 
+
+    /**
+     * Fixes Y movement on tiles and platforms where animation height changes by setting the mario's y
+     * value to the difference between animation heights.
+     */
     public void setAnimation(Animation newAnim) {
         super.setAnimation(newAnim);
     }
@@ -275,11 +334,71 @@ public class Tank extends Sprite {
             bodyToMove2D.Update();
             bodyToHit2D.Update();
         }
+
+        for (Bullet bll : bullets) {
+            if (bll.isVisible()){
+                bll.getBodyToHit2D().setParentX(bll.getX());
+                bll.getBodyToHit2D().setParentY(bll.getY());
+            }
+
+        }
+        for (Bullet bll : bullets) {
+            if (!bll.isVisible()) {
+                bll.setDegree(degree);
+            }
+            bll.getFireShotImpact().update((int)time);
+        }
+
+        explosion.update((int)time);
     }
 
     public void update(TileMap map, float time, boolean lockInput) {
 
     }
+
+    public void updateBullets(JSONArray bulletsJSON){
+        if(bulletsJSON == null || bulletsJSON.length() <= 0) return;
+        int i = 0;
+        for(Bullet bll:bullets){
+            try {
+                JSONObject obj = (JSONObject) bulletsJSON.get(i);
+                bll.setX((float) obj.getDouble("x"));
+                bll.setY((float) obj.getDouble("y"));
+                bll.setDegree((float) obj.getDouble("degree"));
+                bll.setVisible(obj.getBoolean("isVisible"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            i++;
+        }
+    }
+
+    public void updateFireFlames(JSONArray fireFlamesJson){
+        if(fireFlamesJson == null || fireFlamesJson.length() <= 0) return;
+        int i = 0;
+        for(FireShotFlame fireShotFlame:fireShotFlames){
+            try {
+                JSONObject obj = (JSONObject) fireFlamesJson.get(i);
+                fireShotFlame.setX((float) obj.getDouble("x"));
+                fireShotFlame.setY((float) obj.getDouble("y"));
+                fireShotFlame.setDegree((float) obj.getDouble("degree"));
+                fireShotFlame.setVisible(obj.getBoolean("isVisible"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            i++;
+        }
+    }
+
+
+    public void getsDamaged(int dame) {
+        this.health -= dame;
+        if(health < 0 ){
+            health = 0;
+        }
+        this.setHealth(health);
+    }
+
 
     public boolean isAlive() {
         return isAlive;

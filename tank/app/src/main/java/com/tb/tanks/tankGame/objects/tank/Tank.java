@@ -419,5 +419,78 @@ public class Tank extends Sprite {
         this.isLevelClear = true;
         //isSystemDriven=false;
     }
+
+    public String jsonToSendAddPlayer(){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("playerID", this.getPlayerID());
+            json.put("x", this.getX());
+            json.put("y", this.getY());
+            json.put("width", this.getWidth());
+            json.put("height", this.getHeight());
+            json.put("degree", this.getDegree());
+            json.put("heath", this.healthBar.getHealthCurrent());
+            json.put("TYPE_MESSAGE", MESSAGE_TANK_ADD_PLAYER);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return json.toString();
+    }
+
+    public String jsonToSendPlayerHeath(){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("playerID", this.getPlayerID());
+            json.put("heath", this.getHealth());
+            json.put("TYPE_MESSAGE", MESSAGE_TANK_PLAYER_HEATH);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return json.toString();
+    }
+
+    public String jsonToSendUpdateFireFlames(){
+        JSONObject json = new JSONObject();
+        JSONArray jsonFireFlames = new JSONArray();
+        for(FireShotFlame fireShotFlame:fireShotFlames){
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("x", fireShotFlame.getX());
+                jsonObject.put("y", fireShotFlame.getY());
+                jsonObject.put("degree", fireShotFlame.getDegree());
+                jsonObject.put("isVisible", fireShotFlame.isVisible());
+                jsonFireFlames.put(jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            json.put("playerID", this.getPlayerID());
+            json.put("fireFlames", jsonFireFlames);
+            json.put("TYPE_MESSAGE", MESSAGE_PLAYER_FIRE_FLAME_HIDE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return json.toString();
+    }
+
+    public String jsonToSendUpdatePlayer(double angle, float powerToSend, boolean isTankNotMove){
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("playerID", this.getPlayerID());
+            json.put("angle", angle);
+            json.put("power", powerToSend);
+            json.put("isNotMove", isTankNotMove);
+            json.put("TYPE_MESSAGE", MESSAGE_PLAYER_INPUT_MOVE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return json.toString();
+    }
 }
 

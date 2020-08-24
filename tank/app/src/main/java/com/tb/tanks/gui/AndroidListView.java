@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 
 import com.tb.tanks.framework.Input;
@@ -12,6 +13,7 @@ public class AndroidListView extends Component  {
     private Bitmap background;
     private String[] listText;
     private Paint paintText;
+    private Paint paintTextDiscovering;
     private Bitmap[] icons = null;
     private AndroidImageButton[] lstBtnAttacks = null;
     private float paddingTop = 120;
@@ -25,6 +27,15 @@ public class AndroidListView extends Component  {
     private AndroidImageButton btnClose;
     private ComponentItemClickListener componentItemClickListener = null;
 
+    //draw Discovering
+    private String discoveringString = "";
+    private char countDot = 0;
+    private int timeAnimation = 500;
+    private long timeStartDraw = 0;
+    private int discoveringTextWidth = 0;
+    private int discoveringTextHeight = 0;
+    private boolean isDrawDiscovering = false;
+
     Bitmap test;
 
     public AndroidListView(int x, int y, int w, int h) {
@@ -34,6 +45,11 @@ public class AndroidListView extends Component  {
         paintText = new Paint();
         paintText.setTypeface(tf);
         paintText.setTextSize(40f);
+        paintTextDiscovering = new Paint();
+        paintTextDiscovering.setTypeface(tf);
+        paintTextDiscovering.setTextSize(80f);
+
+
         test = GUIResourceManager.loadImage("gui/face.png");
         background = GUIResourceManager.loadImage("gui/bg.png");
         int cwidth = background.getWidth();
@@ -76,6 +92,14 @@ public class AndroidListView extends Component  {
 
     public void setComponentItemClickListener(ComponentItemClickListener componentItemClickListener) {
         this.componentItemClickListener = componentItemClickListener;
+    }
+
+    public boolean isDrawDiscovering() {
+        return isDrawDiscovering;
+    }
+
+    public void setDrawDiscovering(boolean drawDiscovering) {
+        isDrawDiscovering = drawDiscovering;
     }
 
     public void setPaddingTop(float paddingTop) {
@@ -145,12 +169,34 @@ public class AndroidListView extends Component  {
         }
     }
 
+    private void drawDiscoveringString(Canvas g, int X, int Y){
+        if(isDrawDiscovering){
+            long now = System.currentTimeMillis();
+            long delta = now -timeStartDraw;
+            Rect bounds = new Rect();
+            String discovering = "Discovering" + discoveringString;
+            paintTextDiscovering.getTextBounds(discovering, 0, discovering.length(), bounds);
+            discoveringTextWidth = bounds.width();
+            discoveringTextHeight = bounds.height();
+            g.drawText(discovering, X + width/2 - discoveringTextWidth/2, Y + height/2 - discoveringTextHeight/2, paintTextDiscovering);
+            if(delta >= timeAnimation){
+                discoveringString += ".";
+                timeStartDraw = now;
+                if(countDot > 4) countDot = 0;
+                if(discoveringString.length() > 4) discoveringString = "";
+            }
+        }
+    }
+
 
     @Override
     public void draw(Canvas g, int X, int Y) {
         if(isVisible){
             g.drawBitmap(background, X + x, Y + y, null);
-            drawItemString(g, X + x, Y + y);
+            if(!isDrawDiscovering){
+                drawItemString(g, X + x, Y + y);
+            }
+            drawDiscoveringString(g, X + x, Y + y);
             btnClose.draw(g, X + x, Y + y);
         }
     }

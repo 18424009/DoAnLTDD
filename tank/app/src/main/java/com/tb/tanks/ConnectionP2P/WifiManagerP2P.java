@@ -105,11 +105,11 @@ public class WifiManagerP2P implements WifiP2pManager.ActionListener, WifiP2pMan
         return server;
     }
 
-    public Client getHost() {
+    public Client getClient() {
         return client;
     }
 
-    public boolean isHost() {
+    public boolean isServer() {
         return isHost;
     }
 
@@ -140,6 +140,10 @@ public class WifiManagerP2P implements WifiP2pManager.ActionListener, WifiP2pMan
         if(i == WifiP2pManager.P2P_UNSUPPORTED){
             Toast.makeText(mainActivity.getApplicationContext(), "P2P isn't support on this device!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public  void setReciverP2PConnectionListener(P2PConnectionListener p2PConnectionListener){
+        ((WifiDirecBroadcastReciver)receiver).p2PConnectionListener = p2PConnectionListener;
     }
 
     @Override
@@ -232,7 +236,7 @@ public class WifiManagerP2P implements WifiP2pManager.ActionListener, WifiP2pMan
                         if(isHost) {
                             Thread.sleep(1000);
                         }else{
-                            Thread.sleep(2000);
+                            Thread.sleep(1000);
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();

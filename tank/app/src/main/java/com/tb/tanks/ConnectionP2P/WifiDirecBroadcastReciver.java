@@ -1,6 +1,5 @@
 package com.tb.tanks.ConnectionP2P;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +14,7 @@ public class WifiDirecBroadcastReciver extends BroadcastReceiver {
     private WifiP2pManager.Channel channel;
     private WifiManagerP2P wifiManagerP2P;
     private WifiP2pDeviceList deviceList;
+    public P2PConnectionListener p2PConnectionListener = null;
 
     public WifiDirecBroadcastReciver(WifiP2pManager mManager, WifiP2pManager.Channel mChannel, WifiManagerP2P wifiManagerP2P){
         this.manager = mManager;
@@ -55,6 +55,9 @@ public class WifiDirecBroadcastReciver extends BroadcastReceiver {
                 manager.requestConnectionInfo(channel, wifiManagerP2P);
             } else {
                 Toast.makeText(context, "Device Disconnected!", Toast.LENGTH_SHORT).show();
+                if(p2PConnectionListener != null){
+                    p2PConnectionListener.onDisconnect();
+                }
             }
 
         }else if(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)){

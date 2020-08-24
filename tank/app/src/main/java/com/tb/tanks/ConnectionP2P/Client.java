@@ -18,6 +18,10 @@ public class Client extends Thread {
         return socket;
     }
 
+    public void setSocket(Socket socket) {
+        this.socket = socket;
+    }
+
     public Client(InetAddress hostAddress)
     {
         hostAdd=hostAddress.getHostAddress();

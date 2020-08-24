@@ -88,6 +88,7 @@ public class Server extends Thread {
                                     entry.getValue().getSocket().close();
                                     entry.getValue().setSocket(null);
                                 }
+                                sendReceives.clear();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -150,7 +151,7 @@ public class Server extends Thread {
                 }
 
                 //send to client
-                if (players.size() > 0) {
+                if (players.size() > 1) {
                     Object[] playerInfos = players.values().toArray();
                     for (int i = playerInfos.length - 1; i >= 0; i--) {
                         PlayerInfo player = (PlayerInfo) playerInfos[i];
@@ -238,7 +239,14 @@ public class Server extends Thread {
                 e.printStackTrace();
             }
         }
-
-
+        for( HashMap.Entry<String, SendReceive> entry:sendReceives.entrySet()){
+            try {
+                entry.getValue().getSocket().close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            entry.getValue().setSocket(null);
+        }
+        sendReceives.clear();
     }
 }

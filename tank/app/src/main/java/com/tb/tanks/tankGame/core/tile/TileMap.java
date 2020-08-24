@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-import com.game.tank.tankGame.objects.tank.Tank;
+import com.tb.tanks.tankGame.objects.tank.Tank;
 import com.tb.tanks.tankGame.objects.base.Creature;
 import com.tb.tanks.tankGame.objects.tiles.SlopedTile;
 

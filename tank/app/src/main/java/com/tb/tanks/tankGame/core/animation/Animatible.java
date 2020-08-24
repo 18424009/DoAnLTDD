@@ -2,10 +2,17 @@ package com.tb.tanks.tankGame.core.animation;
 
 import android.graphics.Canvas;
 
-public class Animatible {
-    private Animation currAnim;
-    private int offsetX;
-    private int offsetY;
+
+/**
+ * Animatible is an abstract class that a class should extend if it wants to be drawn using
+ * an Animation. 
+ */
+
+abstract public class Animatible {
+	
+	private Animation currAnim;
+	private int offsetX;
+	private int offsetY;
 
     public abstract void draw(Canvas g, float pixelX, float pixelY);
     public abstract void draw(Canvas g, float pixelX, float pixelY, float offsetX, float offsetY);

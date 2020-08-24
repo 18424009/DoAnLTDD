@@ -1,6 +1,11 @@
 package com.tb.tanks.tankGame.core.tile;
 
+
 import android.graphics.Bitmap;
+
+import com.tb.tanks.physic.RecBody2D;
+import com.tb.tanks.tankGame.core.animation.Animation;
+import com.tb.tanks.tankGame.objects.base.Creature;
 
 import java.util.LinkedList;
 import java.util.List;

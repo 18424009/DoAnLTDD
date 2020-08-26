@@ -84,22 +84,21 @@ public class Server extends Thread {
                         if (player != null) {
                             players.remove(playerId);
                             try {
-                                for( HashMap.Entry<String, SendReceive> entry:sendReceives.entrySet()){
-                                    entry.getValue().getSocket().close();
-                                    entry.getValue().setSocket(null);
-                                }
-                                sendReceives.clear();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            isRun = false;
-                            try {
-                                serverSocket.close();
-                                serverSocket = null;
+                                sendReceives.get(playerId).getSocket().close();
+                                sendReceives.get(playerId).setSocket(null);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                             sendReceives.remove(playerId);
+                            if(sendReceives.size() <= 0){
+                                try {
+                                    serverSocket.close();
+                                    serverSocket = null;
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                isRun = false;
+                            }
                         }
                         break;
                     }
@@ -221,7 +220,7 @@ public class Server extends Thread {
     public void run() {
         try {
             if(serverSocket == null)
-               serverSocket = new ServerSocket(8888);
+               serverSocket = new ServerSocket(8988);
         } catch (IOException e) {
             e.printStackTrace();
         }

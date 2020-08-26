@@ -31,7 +31,7 @@ public class Client extends Thread {
     @Override
     public void run() {
         try {
-            socket.connect(new InetSocketAddress(hostAdd,8888), 500);
+            socket.connect(new InetSocketAddress(hostAdd,8988), 500);
             sendReceive = new SendReceive(socket);
             sendReceive.start();
         } catch (IOException e) {

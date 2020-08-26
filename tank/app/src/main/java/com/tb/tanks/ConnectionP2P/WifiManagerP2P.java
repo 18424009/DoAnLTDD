@@ -25,7 +25,7 @@ public class WifiManagerP2P implements WifiP2pManager.ActionListener, WifiP2pMan
     private WifiManager wifiManager;
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
-    private BroadcastReceiver receiver;
+    private BroadcastReceiver receiver = null;
     private IntentFilter intentFilter;
     private Activity mainActivity;
     private List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
@@ -176,7 +176,6 @@ public class WifiManagerP2P implements WifiP2pManager.ActionListener, WifiP2pMan
         final WifiP2pDevice device = deviceArray[i];
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
-
         manager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {

@@ -82,22 +82,22 @@ public class Server extends Thread {
                     case P2PMessage.MESSAGE_DISCONNECT: {
                         PlayerInfo player = players.get(playerId);
                         if (player != null) {
-                            players.remove(playerId);
+                            players.clear();
                             try {
-                                sendReceives.get(playerId).getSocket().close();
-                                sendReceives.get(playerId).setSocket(null);
+                                for( HashMap.Entry<String, SendReceive> entry:sendReceives.entrySet()){
+                                    entry.getValue().getSocket().close();
+                                    entry.getValue().setSocket(null);
+                                }
+                                sendReceives.clear();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            sendReceives.remove(playerId);
-                            if(sendReceives.size() <= 0){
-                                try {
-                                    serverSocket.close();
-                                    serverSocket = null;
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                isRun = false;
+                            isRun = false;
+                            try {
+                                serverSocket.close();
+                                serverSocket = null;
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
                         break;

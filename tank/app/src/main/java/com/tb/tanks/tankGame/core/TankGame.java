@@ -6,6 +6,11 @@ import com.tb.tanks.gui.GUIResourceManager;
 import com.tb.tanks.tankGame.objects.base.Creature;
 import com.tb.tanks.tankGame.screens.SplashLoadingScreen;
 
+/**
+ * Main Entry Class for the game (Only activity used in game)
+ * @author mahesh
+ *
+ */
 public class TankGame extends AndroidGame {
 	boolean firstTimeCreate = true;
 	public TankResourceManager resourceManager;

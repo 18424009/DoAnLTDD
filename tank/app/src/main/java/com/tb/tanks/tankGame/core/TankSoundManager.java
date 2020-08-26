@@ -20,6 +20,11 @@ public class TankSoundManager extends AndroidAudio{
 	private static Sound hurt1, hurt2, yahoo1, yahoo2,stage_clear,stage_begin;
 	private static Sound click, gulp,switchScreen;
 
+	private static Sound bulletImpactTile;
+	private static Sound bulletImpactTank;
+	private static Sound tankExplosion;
+	private static Sound tankFire;
+
 	private static Music music, gameMusic,menuMusic;
 	/**volume of sound in float (0 to 1)*/
 	private static float soundVolume=0.9f;
@@ -64,6 +69,12 @@ public class TankSoundManager extends AndroidAudio{
 			gulp=createSound("sounds/gulp.wav");
 			switchScreen=createSound("sounds/level_enter.wav");
 			click=createSound("sounds/coin.wav");
+
+			bulletImpactTile = createSound("sounds/bullet_impact_tile.wav");
+			bulletImpactTank = createSound("sounds/bullet_impact_tank02.wav");
+			tankExplosion = createSound("sounds/tank_explosion.wav");
+			tankFire = createSound("sounds/tank_fires.wav");
+
 	 		loadMusic();
 		}
 		firstTimeCreate=false;
@@ -79,184 +90,203 @@ public class TankSoundManager extends AndroidAudio{
 	
 	private void loadMusic(){
 		//music=createMusic(filename);
-		menuMusic=createMusic("music/smw_map.mid");//main_menu_music.midi");
+		menuMusic=createMusic("music/World_of_Tanks_OST_24_Master_Plan.mp3");//main_menu_music.midi");
 		Random r = new Random();
 		int rNum = r.nextInt(4);
 		if(rNum == 0) {
-			gameMusic=createMusic("music/smwovr2.mid");
+			gameMusic=createMusic("music/World_of_Tanks_OST_32_Face_to_Face.mp3");
 		} else if(rNum == 1) {
-			gameMusic=createMusic("music/smwovr1.mid");
+			gameMusic=createMusic("music/World_of_Tanks_OST_02_Move_to_Position.mp3");
 		} else if(rNum == 2) {
-			gameMusic=createMusic("music/smb_hammerbros.mid");
+			gameMusic=createMusic("music/World_of_Tanks_OST_03_Steel_March.mp3");
 		} else  {
-			gameMusic=createMusic("music/smrpg_nimbus1.mid");
+			gameMusic=createMusic("music/World_of_Tanks_OST_04_Ruined_Himmelsdorf.mp3");
 		}
 		if (menuMusic!=null)menuMusic.setLooping(true);
 		if (gameMusic!=null){
 			gameMusic.setLooping(true);
 			music=menuMusic;
-			if (musicEnabled && music!=null)music.play();
+			//if (musicEnabled && music!=null)music.play();
 		}
 
-    }
+	}
+	
+	
+	public void playHealthUp() {
+		if (soundEnabled) healthUp.play(soundVolume);
+	}
+	
+	public void playHealthDown() {
+		if (soundEnabled) healthDown.play(soundVolume);
+	}
+	
+	public void playBonusPoints() {
+		if (soundEnabled) bonusPoints.play(soundVolume);
+	}
+	
+	public void playItemSprout() {
+		if (soundEnabled) itemSprout.play(soundVolume);
+	}
+	
+	public void playCoin() {
+		if (soundEnabled) coin.play(soundVolume);
+	}
+	
+	public void playKick() {
+		kick.play(soundVolume);
+	}
+	
+	public void playGulp() {
+		gulp.play(soundVolume);
+	}
+	
+	public void playStomp() {
+		stomp.play(soundVolume);
+	}
 
+	public void playBump() {
+		if (soundEnabled) bump.play(soundVolume);
+	}
+	
+	public void playJump() {
+		if (soundEnabled) jump.play(soundVolume);
+	}
+	
+	public void playPause() {
+		if (soundEnabled) pause.play(soundVolume);
+	}
 
-    public void playHealthUp() {
-        if (soundEnabled) healthUp.play(soundVolume);
-    }
+	public void playBrickShatter() {
+		if (soundEnabled) brick_shatter.play(soundVolume);
+	}
 
-    public void playHealthDown() {
-        if (soundEnabled) healthDown.play(soundVolume);
-    }
+	public void playFireBall() {
+		if (soundEnabled) fireball.play(soundVolume);
+	}
+	
+	public void playDie() {
+		if (soundEnabled) die.play(soundVolume);
+	}
+	
+	public void playPowerUp() {
+		if (soundEnabled) powerUp.play(soundVolume);
+	}
+	
+	public void playPowerDown() {
+		if (soundEnabled) powerDown.play(soundVolume);
+	}
 
-    public void playBonusPoints() {
-        if (soundEnabled) bonusPoints.play(soundVolume);
-    }
+	public void playBulletImpactTile(){
+		if(soundEnabled) bulletImpactTile.play(soundVolume);
+	}
 
-    public void playItemSprout() {
-        if (soundEnabled) itemSprout.play(soundVolume);
-    }
+	public void playBulletImpactTank(){
+		if(soundEnabled) bulletImpactTank.play(soundVolume);
+	}
 
-    public void playCoin() {
-        if (soundEnabled) coin.play(soundVolume);
-    }
+	public void playTankExplosion(){
+		if(soundEnabled) tankExplosion.play(soundVolume);
+	}
 
-    public void playKick() {
-        kick.play(soundVolume);
-    }
+	public void playTankFire(){
+		if(soundEnabled) tankFire.play(soundVolume);
+	}
 
-    public void playGulp() {
-        gulp.play(soundVolume);
-    }
+	public void playHurt() {
+		if (!soundEnabled)return;
+		Random r = new Random();
+		int rNum = r.nextInt(2);
+		if(rNum == 0) {
+			hurt1.play(soundVolume);
+		} else {
+			hurt2.play(soundVolume);
+		}
+	}
+	
+	public void playCelebrate() {
+		if (!soundEnabled)return;
+		Random r = new Random();
+		int rNum = r.nextInt(2);
+		if(rNum == 0) {
+			yahoo1.play(soundVolume);
+		} else {
+			yahoo2.play(soundVolume);
+		}
+	}
+	
+	public void playStageEnter() {
+		if (soundEnabled)stage_begin.play(soundVolume);
+	}
+	
+	public void playStageClear() {
+		if (soundEnabled) stage_clear.play(soundVolume);
+	}
+	
+	public void playswitchScreen() {
+		if (soundEnabled) switchScreen.play(soundVolume);
+	}
+	
+	public void playClick() {
+		if (soundEnabled) click.play(soundVolume);
+	}
+	
+	public void loadMenuMusic(){
+		if(music==menuMusic)return;
+		if (music!=null)music.stop();
+		music=menuMusic;
+		if (musicEnabled && music!=null)music.play();
+	}
+	
+	public  void loadGameMusic(){
+		if(music==gameMusic)return;
+		if (music!=null)music.stop();
+		music=gameMusic;
+		if (musicEnabled && music!=null)music.play();
+	}
+	
+	public static void playMusic(){
+		if (music!=null)music.play();
+	}
+	
+	public static void pauseMusic(){
+		if (music!=null)music.pause();
+	}
+	
+	public static void stopMusic(){
+		if (music!=null)music.stop();
+	}
+	
 
-    public void playStomp() {
-        stomp.play(soundVolume);
-    }
+	public static void setMusicEnabled(boolean enabled){
+		if (music==null)return;
+		musicEnabled=enabled;
+		if (enabled){
+			music.play();
+		}else{
+			music.stop();
+		}
+	}
+	
+	public static void setSoundEnabled(boolean enabled){
+		soundEnabled=enabled;
+	}
+	
+	public static float getSoundVolume() {
+		return soundVolume;
+	}
 
-    public void playBump() {
-        if (soundEnabled) bump.play(soundVolume);
-    }
+	public static void setSoundVolume(float volume) {
+		soundVolume = volume;
+	}
 
-    public void playJump() {
-        if (soundEnabled) jump.play(soundVolume);
-    }
+	public static float getMusicVolume() {
+		return musicVolume;
+	}
 
-    public void playPause() {
-        if (soundEnabled) pause.play(soundVolume);
-    }
-
-    public void playBrickShatter() {
-        if (soundEnabled) brick_shatter.play(soundVolume);
-    }
-
-    public void playFireBall() {
-        if (soundEnabled) fireball.play(soundVolume);
-    }
-
-    public void playDie() {
-        if (soundEnabled) die.play(soundVolume);
-    }
-
-    public void playPowerUp() {
-        if (soundEnabled) powerUp.play(soundVolume);
-    }
-
-    public void playPowerDown() {
-        if (soundEnabled) powerDown.play(soundVolume);
-    }
-
-    public void playHurt() {
-        if (!soundEnabled)return;
-        Random r = new Random();
-        int rNum = r.nextInt(2);
-        if(rNum == 0) {
-            hurt1.play(soundVolume);
-        } else {
-            hurt2.play(soundVolume);
-        }
-    }
-
-    public void playCelebrate() {
-        if (!soundEnabled)return;
-        Random r = new Random();
-        int rNum = r.nextInt(2);
-        if(rNum == 0) {
-            yahoo1.play(soundVolume);
-        } else {
-            yahoo2.play(soundVolume);
-        }
-    }
-
-    public void playStageEnter() {
-        if (soundEnabled)stage_begin.play(soundVolume);
-    }
-
-    public void playStageClear() {
-        if (soundEnabled) stage_clear.play(soundVolume);
-    }
-
-    public void playswitchScreen() {
-        if (soundEnabled) switchScreen.play(soundVolume);
-    }
-
-    public void playClick() {
-        if (soundEnabled) click.play(soundVolume);
-    }
-
-    public void loadMenuMusic(){
-        if(music==menuMusic)return;
-        if (music!=null)music.stop();
-        music=menuMusic;
-        if (musicEnabled && music!=null)music.play();
-    }
-
-    public  void loadGameMusic(){
-        if(music==gameMusic)return;
-        if (music!=null)music.stop();
-        music=gameMusic;
-        if (musicEnabled && music!=null)music.play();
-    }
-
-    public static void playMusic(){
-        if (music!=null)music.play();
-    }
-
-    public static void pauseMusic(){
-        if (music!=null)music.pause();
-    }
-
-    public static void stopMusic(){
-        if (music!=null)music.stop();
-    }
-    public static void setMusicEnabled(boolean enabled){
-        if (music==null)return;
-        musicEnabled=enabled;
-        if (enabled){
-            music.play();
-        }else{
-            music.stop();
-        }
-    }
-
-    public static void setSoundEnabled(boolean enabled){
-        soundEnabled=enabled;
-    }
-
-    public static float getSoundVolume() {
-        return soundVolume;
-    }
-
-    public static void setSoundVolume(float volume) {
-        soundVolume = volume;
-    }
-
-    public static float getMusicVolume() {
-        return musicVolume;
-    }
-
-    public static void setMusicVolume(float volume) {
-        musicVolume = volume;
-        if (music!=null)music.setVolume(musicVolume);
-    }
-
+	public static void setMusicVolume(float volume) {
+		musicVolume = volume;
+		if (music!=null)music.setVolume(musicVolume);
+	}
+	
+	
 }

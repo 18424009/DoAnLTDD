@@ -6,128 +6,142 @@ import android.graphics.Color;
 import com.tb.tanks.framework.Input.TouchEvent;
 
 public abstract class Component {
-    protected int x = 0, y = 0, width = 1, height = 1;
-    protected boolean focused = false;
-    protected int borderColor = Color.BLACK, bgColorNormal = Color.LTGRAY,
-            bgColorFocused = Color.DKGRAY, foreColor = Color.BLACK;
-    protected int borderWidth = 2;
-    protected ComponentClickListener clickListener = null;
-    protected String text = "";
+	protected int x = 0, y = 0, width = 1, height = 1;
+	protected boolean focused = false;
+	protected int borderColor = Color.BLACK, bgColorNormal = Color.LTGRAY,
+			      bgColorFocused = Color.DKGRAY, foreColor = Color.BLACK;
+	protected int borderWidth = 2;
+	protected ComponentClickListener clickListener = null;
+	protected String text = "";
 
-    protected boolean isVisible = true;
+	protected boolean isVisible = true;
 
-    public abstract void draw(Canvas g, int X, int Y);
+	public abstract void draw(Canvas g, int X, int Y);
 
-    protected int offsetX = borderWidth + 1;
-    protected int offsetY = borderWidth + 1;
+	protected int offsetX = borderWidth + 1;
+	protected int offsetY = borderWidth + 1;
 
-    private Component parent=null;
+	private Component parent=null;
+	
+	private String command="";
+	
+	public Component(int x, int y, int w, int h) {
+		this.x = x;
+		this.y = y;
+		this.width = w;
+		this.height = h;
+	}
 
-    private String command="";
+	public boolean isVisible() {
+		return isVisible;
+	}
 
-    public Component(int x, int y, int w, int h) {
-        this.x = x;
-        this.y = y;
-        this.width = w;
-        this.height = h;
-    }
+	public void setVisible(boolean visible) {
+		isVisible = visible;
+	}
 
-    public boolean isVisible() {
-        return isVisible;
-    }
+	public void addListener(ComponentClickListener clickListener) {
+		this.clickListener = clickListener;
+	}
 
-    public void setVisible(boolean visible) {
-        isVisible = visible;
-    }
+	public void onTouchDown() {
+		focused = true;
+	}
+	public void onTouchUp() {
+		focused = false;
+		if (this.clickListener != null)
+			this.clickListener.onClick(this);
+	}
 
-    public void addListener(ComponentClickListener clickListener) {
-        this.clickListener = clickListener;
-    }
+	public void setCommand(String command) {
+		this.command = command;
+	}
 
-    public void onTouchDown() {
-        focused = true;
-    }
-    public void onTouchUp() {
-        focused = false;
-        if (this.clickListener != null)
-            this.clickListener.onClick(this);
-    }
+	public abstract void processEvent(TouchEvent event) ;
 
-    public void setCommand(String command) {
-        this.command = command;
-    }
+	public void setoffsets(int x, int y){
+		this.offsetX = x;
+		this.offsetY = y;
+	}
+	
+	public boolean inBounds(TouchEvent event) {
+		int x=this.x;
+		int y=this.y;
+		if (parent!=null){
+			x+=parent.x;
+			y+=parent.y;
+		}
 
-    public abstract void processEvent(TouchEvent event) ;
+		if(parent.getParent() != null){
+			x+=parent.getParent().x;
+			y+= parent.getParent().y;
+		}
 
-    public void setoffsets(int x, int y){
-        this.offsetX = x;
-        this.offsetY = y;
-    }
+		if (event.x > x && event.x < x + width - 1 && event.y > y
+				&& event.y < y + height - 1)
+			return true;
+		else
+			return false;
+	}
 
-    public boolean inBounds(TouchEvent event) {
-        int x=this.x;
-        int y=this.y;
-        if (parent!=null){
-            x+=parent.x;
-            y+=parent.y;
-        }
-        if (event.x > x && event.x < x + width - 1 && event.y > y
-                && event.y < y + height - 1)
-            return true;
-        else
-            return false;
-    }
+	public Component getParent() {
+		return parent;
+	}
 
-    public Component getParent() {
-        return parent;
-    }
+	public void setParent(Component parent) {
+		this.parent = parent;
+	}
+	public int getX() {
+		return x;
+	}
 
-    public void setParent(Component parent) {
-        this.parent = parent;
-    }
-    public int getX() {
-        return x;
-    }
+	public void setX(int x) {
+		this.x = x;
+	}
 
-    public int getY() {
-        return y;
-    }
+	public void setY(int y) {
+		this.y = y;
+	}
 
-    public int getWidth() {
-        return width;
-    }
+	public int getY() {
+		return y;
+	}
 
-    public int getHeight() {
-        return height;
-    }
+	public int getWidth() {
+		return width;
+	}
 
-    public void setBorderColor(int borderColor) {
-        this.borderColor = borderColor;
-    }
+	public int getHeight() {
+		return height;
+	}
 
-    public void setBgColorNormal(int bgColorNormal) {
-        this.bgColorNormal = bgColorNormal;
-    }
+	public void setBorderColor(int borderColor) {
+		this.borderColor = borderColor;
+	}
 
-    public void setBgColorFocused(int bgColorFocused) {
-        this.bgColorFocused = bgColorFocused;
-    }
+	public void setBgColorNormal(int bgColorNormal) {
+		this.bgColorNormal = bgColorNormal;
+	}
 
-    public void setForeColor(int foreColor) {
-        this.foreColor = foreColor;
-    }
+	public void setBgColorFocused(int bgColorFocused) {
+		this.bgColorFocused = bgColorFocused;
+	}
 
-    public boolean isFocused() {
-        return focused;
-    }
+	public void setForeColor(int foreColor) {
+		this.foreColor = foreColor;
+	}
 
-
-    public ComponentClickListener getClickListener() {
-        return clickListener;
-    }
+	public boolean isFocused() {
+		return focused;
+	}
 
 
-    public String getText() {
-        return text;
-    }
+	public ComponentClickListener getClickListener() {
+		return clickListener;
+	}
+
+
+	public String getText() {
+		return text;
+	}
 }

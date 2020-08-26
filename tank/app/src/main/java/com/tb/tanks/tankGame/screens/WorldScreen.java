@@ -9,26 +9,36 @@ import android.view.View;
 
 import com.erz.joysticklibrary.JoyStick;
 import com.tb.tanks.ConnectionP2P.MessageHandler;
+import com.tb.tanks.ConnectionP2P.P2PConnectionListener;
 import com.tb.tanks.ConnectionP2P.P2PMessage;
 import com.tb.tanks.ConnectionP2P.SendReceive;
+import com.tb.tanks.R;
 import com.tb.tanks.framework.Game;
 import com.tb.tanks.framework.Input.KeyEvent;
 import com.tb.tanks.framework.Input.TouchEvent;
 import com.tb.tanks.framework.Screen;
 import com.tb.tanks.framework.gfx.AndroidGame;
 import com.tb.tanks.framework.input.JoyStickEvent;
+import com.tb.tanks.gui.AndroidDialog;
+import com.tb.tanks.gui.AndroidImageButton;
+import com.tb.tanks.gui.AndroidText;
+import com.tb.tanks.gui.Component;
+import com.tb.tanks.gui.ComponentClickListener;
+import com.tb.tanks.gui.GUIResourceManager;
 import com.tb.tanks.physic.RecBody2D;
 import com.tb.tanks.tankGame.core.GameLoader;
 import com.tb.tanks.tankGame.core.GameRenderer;
 import com.tb.tanks.tankGame.core.Settings;
 import com.tb.tanks.tankGame.core.TankGame;
 import com.tb.tanks.tankGame.core.TankResourceManager;
+import com.tb.tanks.tankGame.core.TankSoundManager;
 import com.tb.tanks.tankGame.core.tile.GameTile;
 import com.tb.tanks.tankGame.core.tile.TileMap;
 import com.tb.tanks.tankGame.objects.tank.Bullet;
 import com.tb.tanks.tankGame.objects.tank.Tank;
 import com.tb.tanks.tankGame.util.GameState;
 import com.tb.tanks.tankGame.util.PlayerDefine;
+import com.tb.tanks.tankGame.util.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,12 +80,15 @@ public class WorldScreen extends Screen {
     private float xOther;
     private float yOther;
     private float degreeOther;
+    private AndroidDialog dlgYouWin;
+    private AndroidDialog dlgYouLose;
+    private AndroidDialog dlgExitBatle;
 
     private GameState gameState;
+    boolean isOtherDeviceDisconneted = false;
 
 
-
-    public WorldScreen(Game game) {
+    public WorldScreen(final Game game) {
         super(game);
         frameBuffer = ((AndroidGame) game).getBuffer();
         gameCanvas = new Canvas(frameBuffer);
@@ -95,14 +108,13 @@ public class WorldScreen extends Screen {
         paint2.setColor(Color.WHITE);
         //Settings.loadPreferences((((AndroidGame)game)).getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, 0));
 
-
-        if (game.getWifiManagerP2P().getHost() != null) {
-            if (game.getWifiManagerP2P().getHost().getState() == Thread.State.NEW) {
-                game.getWifiManagerP2P().getHost().start();
+        if (game.getWifiManagerP2P().getClient() != null) {
+            if (game.getWifiManagerP2P().getClient().getState() == Thread.State.NEW) {
+                game.getWifiManagerP2P().getClient().start();
             }
 
             while (sendReceive == null) {
-                sendReceive = game.getWifiManagerP2P().getHost().getSendReceive();
+                sendReceive = game.getWifiManagerP2P().getClient().getSendReceive();
                 if (sendReceive != null) {
                     sendReceive.setMessageHandler(messageClientHandler);
                 }
@@ -118,17 +130,114 @@ public class WorldScreen extends Screen {
 
         gameState = new GameState();
 
-//        if (game.getWifiManagerP2P().getServer() != null) {
-//            game.getWifiManagerP2P().getServer().getUpdateGameState().start();
-//        }
-
         ((AndroidGame) game).getFireButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (tank != null)
-                    tank.setHasFire(true);
+                    tank.setHasFire(true, true);
             }
         });
+
+
+        AndroidImageButton btnMainMenu = new AndroidImageButton("",(GUIResourceManager.you_win.getWidth() - GUIResourceManager.menu_normal.getWidth())/2,
+                                                                (GUIResourceManager.you_win.getHeight()*3/4 - GUIResourceManager.menu_normal.getHeight() + 10),
+                                                                GUIResourceManager.menu_normal.getWidth(), GUIResourceManager.menu_normal.getHeight());
+        btnMainMenu.setBackgroundNormal(GUIResourceManager.menu_normal);
+        btnMainMenu.setBackgroundFocused(GUIResourceManager.menu_focus);
+
+        btnMainMenu.addListener(new ComponentClickListener() {
+            @Override
+            public void onClick(Component source) {
+                ((AndroidGame) game).ShowJoyStick(false);
+                ((AndroidGame) game).ShowFireButton(false);
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendReceive.writeObjectJSON("{playerID: " + tank.getPlayerID() + ", TYPE_MESSAGE: " + P2PMessage.MESSAGE_DISCONNECT + "}");
+                    }
+                });
+                thread.start();
+
+
+                game.getWifiManagerP2P().disconnect();
+                goToMenu();
+            }
+        });
+
+        AndroidImageButton btnMainMenu1 = new AndroidImageButton("",(GUIResourceManager.you_win.getWidth() - GUIResourceManager.menu_normal.getWidth())/2,
+                (GUIResourceManager.you_win.getHeight()*3/4 - GUIResourceManager.menu_normal.getHeight() + 10),
+                GUIResourceManager.menu_normal.getWidth(), GUIResourceManager.menu_normal.getHeight());
+        btnMainMenu1.setBackgroundNormal(GUIResourceManager.menu_normal);
+        btnMainMenu1.setBackgroundFocused(GUIResourceManager.menu_focus);
+
+        btnMainMenu1.addListener(new ComponentClickListener() {
+            @Override
+            public void onClick(Component source) {
+                ((AndroidGame) game).ShowJoyStick(false);
+                ((AndroidGame) game).ShowFireButton(false);
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendReceive.writeObjectJSON("{playerID: " + tank.getPlayerID() + ", TYPE_MESSAGE: " + P2PMessage.MESSAGE_DISCONNECT + "}");
+                    }
+                });
+                thread.start();
+
+                game.getWifiManagerP2P().disconnect();
+                goToMenu();
+            }
+        });
+
+
+
+        dlgExitBatle = new AndroidDialog((game.getScreenWidth() - GUIResourceManager.bg_free.getWidth())/2,(game.getScreenHeight() - GUIResourceManager.bg_free.getHeight())/2, GUIResourceManager.bg_free.getWidth(), GUIResourceManager.bg_free.getHeight());
+        dlgExitBatle.setBackgroundNormal(GUIResourceManager.bg_free);
+        dlgExitBatle.setVisible(false);
+        AndroidText lblMessageExitBatle = new AndroidText(((AndroidGame) game).getResources().getString(R.string.game_dialog_exit_batle),(dlgExitBatle.getWidth() - 450)/2,dlgExitBatle.getHeight()/6, 100, 100);
+        lblMessageExitBatle.setColor(Color.RED);
+        lblMessageExitBatle.setTextSize(50);
+        AndroidImageButton btn_ok = new AndroidImageButton("OK", 50, dlgExitBatle.getHeight()*4/6 + 30, GUIResourceManager.btn_free_normal.getWidth(), GUIResourceManager.btn_free_normal.getHeight());
+        btn_ok.setBackgroundNormal(GUIResourceManager.btn_free_normal);
+        btn_ok.setBackgroundFocused(GUIResourceManager.btn_free_focus);
+        btn_ok.setTextSize(40);
+        btn_ok.setTextColor(Color.WHITE);
+        btn_ok.setTextY(-5);
+        btn_ok.addListener(new ComponentClickListener() {
+            @Override
+            public void onClick(Component source) {
+                tank.setHealth(0);
+                sendReceive.writeObjectJSON(tank.jsonToSendPlayerHeath());
+                dlgExitBatle.setVisible(false);
+            }
+        });
+
+        AndroidImageButton btn_cancel = new AndroidImageButton("Cancel", dlgExitBatle.getWidth() - GUIResourceManager.btn_free_normal.getWidth() - 50, dlgExitBatle.getHeight()*4/6 + 30, GUIResourceManager.btn_free_normal.getWidth(), GUIResourceManager.btn_free_normal.getHeight());
+        btn_cancel.setBackgroundNormal(GUIResourceManager.btn_free_normal);
+        btn_cancel.setBackgroundFocused(GUIResourceManager.btn_free_focus);
+        btn_cancel.setTextSize(40);
+        btn_cancel.setTextColor(Color.WHITE);
+        btn_cancel.setTextY(-5);
+        btn_cancel.addListener(new ComponentClickListener() {
+            @Override
+            public void onClick(Component source) {
+                dlgExitBatle.setVisible(false);
+            }
+        });
+
+        dlgYouWin = new AndroidDialog((game.getScreenWidth() - GUIResourceManager.you_win.getWidth())/2,(game.getScreenHeight() - GUIResourceManager.you_win.getHeight())/2, GUIResourceManager.you_win.getWidth(), GUIResourceManager.you_win.getHeight());
+        dlgYouWin.setBackgroundNormal(GUIResourceManager.you_win);
+        dlgYouWin.setY(-GUIResourceManager.you_win.getHeight()/2);
+        dlgYouWin.setVisible(false);
+        dlgYouLose = new AndroidDialog((game.getScreenWidth() - GUIResourceManager.you_lose.getWidth())/2,(game.getScreenHeight() - GUIResourceManager.you_lose.getHeight())/2, GUIResourceManager.you_lose.getWidth(), GUIResourceManager.you_lose.getHeight());
+        dlgYouLose.setBackgroundNormal(GUIResourceManager.you_lose);
+        dlgYouLose.setY(-GUIResourceManager.you_win.getHeight()/2);
+        dlgYouLose.setVisible(false);
+
+        dlgYouWin.addComponent(btnMainMenu);
+        dlgYouLose.addComponent(btnMainMenu1);
+        dlgExitBatle.addComponent(lblMessageExitBatle);
+        dlgExitBatle.addComponent(btn_ok);
+        dlgExitBatle.addComponent(btn_cancel);
     }
 
 
@@ -174,6 +283,20 @@ public class WorldScreen extends Screen {
         lockUpdates = true;
 
         try {
+            game.getWifiManagerP2P().setReciverP2PConnectionListener(new P2PConnectionListener() {
+                @Override
+                public void onConnect(boolean isError) {
+
+                }
+
+                @Override
+                public void onDisconnect() {
+                    if(game.getWifiManagerP2P().isServer()){
+                        game.getWifiManagerP2P().getServer().isRun = false;
+                    }
+                    isOtherDeviceDisconneted = true;
+                }
+            });
             gameLoader = new GameLoader((AndroidGame) game);
             renderer = new GameRenderer();
             renderer.setDrawHudEnabled(false);
@@ -181,14 +304,19 @@ public class WorldScreen extends Screen {
             renderer.setBackground(TankResourceManager.Background);
             map = gameLoader.loadMap("maps/map4.txt",
                     ((TankGame) game).soundManager); // use the ResourceManager
-
             Settings.resetScores();
+            Settings.loadPreferences((AndroidGame)game);
+            if(Settings.musicEnabled){
+                ((TankGame) game).soundManager.loadGameMusic();
+                TankSoundManager.setMusicVolume(Settings.musicVolume/100.0f);
+            }
             tank = new Tank(((TankGame) game).soundManager);
 
             tankOther = new Tank(((TankGame) game).soundManager);
+            tankOther.setIdleTank(TankResourceManager.TankOther);
 
             tank.setPlayerID(sendReceive.getLocalIP());
-            if(game.getWifiManagerP2P().isHost()){
+            if(game.getWifiManagerP2P().isServer()){
                 tank.setX(1200);
                 tank.setY(1200);
             }
@@ -216,14 +344,6 @@ public class WorldScreen extends Screen {
             Log.e("Errrr", "invalid map");
         }
         lockUpdates = false;
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true){
-
-                }
-            }
-        });
     }
 
     public void affterLoadGame(){
@@ -238,6 +358,15 @@ public class WorldScreen extends Screen {
         if (lockUpdates) return;
         List<TouchEvent> touchEvents = game.getInput().getTouchEvents();
         updateRunning(touchEvents, deltaTime);
+        if (touchEvents ==null || touchEvents.size()==0) return;
+        int len = touchEvents.size();
+        for (int i = 0; i < len; i++) {
+            TouchEvent event = touchEvents.get(i);
+            dlgYouWin.processEvent(event);
+            dlgYouLose.processEvent(event);
+            dlgExitBatle.processEvent(event);
+        }
+        updateRunning(touchEvents, deltaTime);
     }
 
     private void updateRunning(List<TouchEvent> touchEvents, float deltaTime) {
@@ -247,6 +376,7 @@ public class WorldScreen extends Screen {
         if(!isTankNotMove){
             isTankNotMove = CollisionTankPlayerAndTankPlayerOther() && tankOther.isAlive();
         }
+
         CollisionTileAndTankPlayerBullets();
         CollisionTankOtherAndBullets();
         CollisionTankAndBulletsOther();
@@ -256,7 +386,7 @@ public class WorldScreen extends Screen {
         //System.out.println(js.toString());
         if (tank.getHasFire()) {
             sendReceive.writeObjectJSON(tank.fire());
-            tank.setHasFire(false);
+            tank.setHasFire(false, false);
         }
         if (event.direction != JoyStick.DIRECTION_CENTER && tank.isAlive()) {
             float powerToSend = 0.0f;
@@ -283,8 +413,9 @@ public class WorldScreen extends Screen {
 
         try {
             if (((JSONObject) js.get("me")).has("bullets")){
-                tank.updateBullets(((JSONObject) js.get("me")).getJSONArray("bullets"));
+                tank.updateBullets(((JSONObject) js.get("me")).getJSONArray("bullets"), false);
             }
+            tank.setHealth(((JSONObject) js.get("me")).getInt("heath"));
 
 
         } catch (JSONException e) {
@@ -294,14 +425,18 @@ public class WorldScreen extends Screen {
         try {
             JSONArray obj = js.getJSONArray("others");
             if (obj.length() > 0) {
+                if(obj.getJSONObject(0).has("id"))
+                    tankOther.setPlayerID( obj.getJSONObject(0).getString("id"));
                 tankOther.setX((float) obj.getJSONObject(0).getDouble("x"));
                 tankOther.setY((float) obj.getJSONObject(0).getDouble("y"));
                 tankOther.setDegree((float) obj.getJSONObject(0).getDouble("degree"));
                 tankOther.setHealth(obj.getJSONObject(0).getInt("heath"));
                 if (obj.getJSONObject(0).has("bullets")) {
-                    tankOther.updateBullets(obj.getJSONObject(0).getJSONArray("bullets"));
+                    tankOther.updateBullets(obj.getJSONObject(0).getJSONArray("bullets"), true);
                     for(Bullet bll:tankOther.getBullets()){
-                        if(!bll.isBeforeVisible() && bll.isVisible()) tankOther.setHasFire(true);
+                        if(!bll.isBeforeVisible() && bll.isVisible()) {
+                            tankOther.setHasFire(true, Utils.distance(tank.getX(), tank.getY(), tankOther.getX(), tankOther.getY()) <= Utils.HEAR_SOUND_RADIUS);
+                        }
                     }
                 }
             }
@@ -310,8 +445,25 @@ public class WorldScreen extends Screen {
             e.printStackTrace();
         }
 
+        if(tank.getHealth() <= 0 || !game.getWifiManagerP2P().IsWifiEnable()){
+            if(!dlgYouLose.isVisible()){
+                dlgYouLose.setVisible(true);
+                ((AndroidGame) game).ShowJoyStick(false);
+                ((AndroidGame) game).ShowFireButton(false);
+            }
+            dlgYouLose.updateShowVertical();
+        }else if( tankOther.getHealth() <= 0 || (isOtherDeviceDisconneted && game.getWifiManagerP2P().IsWifiEnable())){
+            if(!dlgYouWin.isVisible()){
+                dlgYouWin.setVisible(true);
+                ((AndroidGame) game).ShowJoyStick(false);
+                ((AndroidGame) game).ShowFireButton(false);
+            }
+            dlgYouWin.updateShowVertical();
+        }
+
         tank.update(map, period);
         tankOther.update(map, period);
+
     }
 
     private boolean CollisionTileAndTankPlayer() {
@@ -352,7 +504,10 @@ public class WorldScreen extends Screen {
                         int k = 0;
                         for (Bullet bll : tank.getBullets()) {
                             if (bll.isVisible() && RecBody2D.CheckCollision(tile.getBody2D(), bll.getBodyToHit2D())) {
+                                if(Utils.distance(tank.getX(), tank.getY(), bll.getX(), bll.getY()) <= Utils.HEAR_SOUND_RADIUS && !bll.isCollision())
+                                    ((TankGame)game).soundManager.playBulletImpactTile();
                                 bll.setVisible(false);
+                                bll.setCollision(true);
                                 bll.getFireShotImpact().setX(bll.getX());
                                 bll.getFireShotImpact().setY(bll.getY());
                                 bll.getFireShotImpact().setVisible(true);
@@ -379,9 +534,12 @@ public class WorldScreen extends Screen {
                         int k = 0;
                         for (Bullet bll : tankOther.getBullets()) {
                             if (bll.isVisible() && RecBody2D.CheckCollision(tile.getBody2D(), bll.getBodyToHit2D())) {
+                                if(Utils.distance(tank.getX(), tank.getY(), bll.getX(), bll.getY()) <= Utils.HEAR_SOUND_RADIUS && !bll.isCollision())
+                                    ((TankGame)game).soundManager.playBulletImpactTile();
                                 bll.getFireShotImpact().setX(bll.getX());
                                 bll.getFireShotImpact().setY(bll.getY());
                                 bll.getFireShotImpact().setVisible(true);
+                                bll.setCollision(true);
                             }
                             k++;
                         }
@@ -397,11 +555,16 @@ public class WorldScreen extends Screen {
             int k = 0;
             for (Bullet bll : tank.getBullets()) {
                 if (bll.isVisible() && RecBody2D.CheckCollision(tankOther.getBodyToHit2D(), bll.getBodyToHit2D())) {
+                    if(!bll.isCollision())
+                        ((TankGame)game).soundManager.playBulletImpactTank();
                     bll.setVisible(false);
+                    bll.setCollision(true);
                     bll.getFireShotImpact().setX(bll.getX());
                     bll.getFireShotImpact().setY(bll.getY());
                     bll.getFireShotImpact().setVisible(true);
                     sendReceive.writeObjectJSON("{playerID: " + tank.getPlayerID() + ", index:" + k + ", TYPE_MESSAGE: " + MESSAGE_COLLISION_BULLETS_TILES + "}");
+                    tankOther.getsDamaged(PlayerDefine.PLAYER_DAMGE);
+                    sendReceive.writeObjectJSON(tankOther.jsonToSendPlayerHeath());
                 }
                 k++;
             }
@@ -413,11 +576,12 @@ public class WorldScreen extends Screen {
             int k = 0;
             for (Bullet bll : tankOther.getBullets()) {
                 if (bll.isVisible() && RecBody2D.CheckCollision(tank.getBodyToHit2D(), bll.getBodyToHit2D())) {
+                    if(!bll.isCollision())
+                        ((TankGame)game).soundManager.playBulletImpactTank();
                     bll.getFireShotImpact().setX(bll.getX());
                     bll.getFireShotImpact().setY(bll.getY());
                     bll.getFireShotImpact().setVisible(true);
-                    tank.getsDamaged(PlayerDefine.PLAYER_DAMGE);
-                    sendReceive.writeObjectJSON(tank.jsonToSendPlayerHeath());
+                    bll.setCollision(true);
                 }
                 k++;
             }
@@ -439,6 +603,10 @@ public class WorldScreen extends Screen {
         renderer.draw(gameCanvas, map, backgroundMap, foregroundMap,
                 frameBuffer.getWidth(), frameBuffer.getHeight());
 
+        dlgYouWin.draw(gameCanvas,0, 0);
+        dlgYouLose.draw(gameCanvas,0, 0);
+        dlgExitBatle.draw(gameCanvas, 0, 0);
+
         //GameRenderer.drawStringDropShadowAsEntity(gameCanvas, "WORLD-1",  worldLocations[0]+8, 100,0,0);
         //GameRenderer.drawStringDropShadowAsEntity(gameCanvas, "WORLD-2",  worldLocations[1]+8, 100,0,0);
         //GameRenderer.drawStringDropShadowAsEntity(gameCanvas, "WORLD-3",  worldLocations[2]+8, 100,0,0);
@@ -458,27 +626,27 @@ public class WorldScreen extends Screen {
     }
 
     @Override
-    public void dispose() {
+    public void onStop() {
 
     }
 
     @Override
-    public void onBackPressed() {
-        ((AndroidGame) game).ShowJoyStick(false);
-        ((AndroidGame) game).ShowFireButton(false);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                sendReceive.writeObjectJSON("{playerID: " + tank.getPlayerID() + ", TYPE_MESSAGE: " + P2PMessage.MESSAGE_DISCONNECT + "}");
-            }
-        });
-        thread.start();
-
-
+    public void dispose() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         game.getWifiManagerP2P().disconnect();
-        goToMenu();
+    }
 
-        //showControls_SetUp_Dialog();
+    @Override
+    public void onBackPressed() {
+        if(dlgExitBatle.isVisible()){
+            dlgExitBatle.setVisible(false);
+        }else {
+            dlgExitBatle.setVisible(true);
+        }
     }
 
     private boolean inBounds(TouchEvent event, int x, int y, int width,

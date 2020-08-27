@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.util.Log;
 import android.view.View;
 
@@ -25,6 +26,7 @@ import com.tb.tanks.gui.AndroidText;
 import com.tb.tanks.gui.Component;
 import com.tb.tanks.gui.ComponentClickListener;
 import com.tb.tanks.gui.GUIResourceManager;
+import com.tb.tanks.gui.MiniMap;
 import com.tb.tanks.physic.RecBody2D;
 import com.tb.tanks.tankGame.core.GameLoader;
 import com.tb.tanks.tankGame.core.GameRenderer;
@@ -86,6 +88,7 @@ public class WorldScreen extends Screen {
 
     private GameState gameState;
     boolean isOtherDeviceDisconneted = false;
+    private MiniMap miniMap;
 
 
     public WorldScreen(final Game game) {
@@ -238,6 +241,8 @@ public class WorldScreen extends Screen {
         dlgExitBatle.addComponent(lblMessageExitBatle);
         dlgExitBatle.addComponent(btn_ok);
         dlgExitBatle.addComponent(btn_cancel);
+
+
     }
 
 
@@ -310,6 +315,17 @@ public class WorldScreen extends Screen {
                 ((TankGame) game).soundManager.loadGameMusic();
                 TankSoundManager.setMusicVolume(Settings.musicVolume/100.0f);
             }
+
+            miniMap = new MiniMap(0,0, GUIResourceManager.background_mini_map.getWidth(), GUIResourceManager.background_mini_map.getHeight());
+            if(((AndroidGame) game).hasCutout()){
+                Point standard = ((AndroidGame) game).m_cutoutHelper.standardizeToSafeX(miniMap.getX(), miniMap.getY());
+                miniMap.setX(standard.x);
+                miniMap.setY(standard.y);
+            }
+            miniMap.setRealMapWidth(gameLoader.getRealWidth());
+            miniMap.setRealMapHeight(gameLoader.getRealHeight());
+            miniMap.setRealMapPos(gameLoader.getRealPos());
+
             tank = new Tank(((TankGame) game).soundManager);
 
             tankOther = new Tank(((TankGame) game).soundManager);
@@ -328,6 +344,9 @@ public class WorldScreen extends Screen {
 
             tankOther.setX(-3000);
             tankOther.setY(-3000);
+
+            miniMap.addPlayer("me", tank);
+            miniMap.addPlayer("other", tankOther);
 
             sendReceive.writeObjectJSON(tank.jsonToSendAddPlayer());
 
@@ -606,6 +625,7 @@ public class WorldScreen extends Screen {
         dlgYouWin.draw(gameCanvas,0, 0);
         dlgYouLose.draw(gameCanvas,0, 0);
         dlgExitBatle.draw(gameCanvas, 0, 0);
+        miniMap.draw(gameCanvas, 0, 0);
 
         //GameRenderer.drawStringDropShadowAsEntity(gameCanvas, "WORLD-1",  worldLocations[0]+8, 100,0,0);
         //GameRenderer.drawStringDropShadowAsEntity(gameCanvas, "WORLD-2",  worldLocations[1]+8, 100,0,0);

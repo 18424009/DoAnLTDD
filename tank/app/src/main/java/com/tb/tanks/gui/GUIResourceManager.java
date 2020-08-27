@@ -35,6 +35,9 @@ public class GUIResourceManager {
     public static Bitmap btn_free_normal;
     public static Bitmap btn_free_focus;
     public static Bitmap[] loadings;
+    public static Bitmap background_mini_map;
+    public static Bitmap tank_mini_map;
+    public static Bitmap tank_other_mini_map;
 
     public GUIResourceManager(Activity pActivity) {
         activity = pActivity;
@@ -64,6 +67,9 @@ public class GUIResourceManager {
         btn_about_focus = loadImage("gui/btn_about_focus.png");
         btn_free_normal = loadImage("gui/btn_free_normal.png");
         btn_free_focus = loadImage("gui/btn_free_focus.png");
+        background_mini_map = loadImage("gui/mini_map/mini_map_boder.png");
+        tank_mini_map = loadImage("gui/mini_map/player_minimap_small_blur.png");
+        tank_other_mini_map = loadImage("gui/mini_map/player_other_mini_map_small.png");
     }
 
     public void LoadResourceLoadings() {

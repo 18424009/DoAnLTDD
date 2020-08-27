@@ -36,7 +36,7 @@ public class CutoutHelper {
             for(Rect unsafeArea : m_cutout.getBoundingRects())
             {
                 if(unsafeArea.contains(x0, y0)){
-                    x0 += unsafeArea.right;
+                    x0 = unsafeArea.right;
                     y0 += unsafeArea.top;
                     return new Point(x0, y0);
                 }

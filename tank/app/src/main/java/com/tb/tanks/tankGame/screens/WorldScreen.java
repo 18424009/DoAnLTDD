@@ -27,6 +27,7 @@ import com.tb.tanks.gui.Component;
 import com.tb.tanks.gui.ComponentClickListener;
 import com.tb.tanks.gui.GUIResourceManager;
 import com.tb.tanks.gui.MiniMap;
+import com.tb.tanks.gui.ScoreBoard;
 import com.tb.tanks.physic.RecBody2D;
 import com.tb.tanks.tankGame.core.GameLoader;
 import com.tb.tanks.tankGame.core.GameRenderer;
@@ -89,6 +90,7 @@ public class WorldScreen extends Screen {
     private GameState gameState;
     boolean isOtherDeviceDisconneted = false;
     private MiniMap miniMap;
+    private ScoreBoard scoreBoard;
 
 
     public WorldScreen(final Game game) {
@@ -142,9 +144,9 @@ public class WorldScreen extends Screen {
         });
 
 
-        AndroidImageButton btnMainMenu = new AndroidImageButton("",(GUIResourceManager.you_win.getWidth() - GUIResourceManager.menu_normal.getWidth())/2,
-                                                                (GUIResourceManager.you_win.getHeight()*3/4 - GUIResourceManager.menu_normal.getHeight() + 10),
-                                                                GUIResourceManager.menu_normal.getWidth(), GUIResourceManager.menu_normal.getHeight());
+        AndroidImageButton btnMainMenu = new AndroidImageButton("", (GUIResourceManager.you_win.getWidth() - GUIResourceManager.menu_normal.getWidth()) / 2,
+                (GUIResourceManager.you_win.getHeight() * 3 / 4 - GUIResourceManager.menu_normal.getHeight() + 10),
+                GUIResourceManager.menu_normal.getWidth(), GUIResourceManager.menu_normal.getHeight());
         btnMainMenu.setBackgroundNormal(GUIResourceManager.menu_normal);
         btnMainMenu.setBackgroundFocused(GUIResourceManager.menu_focus);
 
@@ -167,8 +169,8 @@ public class WorldScreen extends Screen {
             }
         });
 
-        AndroidImageButton btnMainMenu1 = new AndroidImageButton("",(GUIResourceManager.you_win.getWidth() - GUIResourceManager.menu_normal.getWidth())/2,
-                (GUIResourceManager.you_win.getHeight()*3/4 - GUIResourceManager.menu_normal.getHeight() + 10),
+        AndroidImageButton btnMainMenu1 = new AndroidImageButton("", (GUIResourceManager.you_win.getWidth() - GUIResourceManager.menu_normal.getWidth()) / 2,
+                (GUIResourceManager.you_win.getHeight() * 3 / 4 - GUIResourceManager.menu_normal.getHeight() + 10),
                 GUIResourceManager.menu_normal.getWidth(), GUIResourceManager.menu_normal.getHeight());
         btnMainMenu1.setBackgroundNormal(GUIResourceManager.menu_normal);
         btnMainMenu1.setBackgroundFocused(GUIResourceManager.menu_focus);
@@ -192,14 +194,13 @@ public class WorldScreen extends Screen {
         });
 
 
-
-        dlgExitBatle = new AndroidDialog((game.getScreenWidth() - GUIResourceManager.bg_free.getWidth())/2,(game.getScreenHeight() - GUIResourceManager.bg_free.getHeight())/2, GUIResourceManager.bg_free.getWidth(), GUIResourceManager.bg_free.getHeight());
+        dlgExitBatle = new AndroidDialog((game.getScreenWidth() - GUIResourceManager.bg_free.getWidth()) / 2, (game.getScreenHeight() - GUIResourceManager.bg_free.getHeight()) / 2, GUIResourceManager.bg_free.getWidth(), GUIResourceManager.bg_free.getHeight());
         dlgExitBatle.setBackgroundNormal(GUIResourceManager.bg_free);
         dlgExitBatle.setVisible(false);
-        AndroidText lblMessageExitBatle = new AndroidText(((AndroidGame) game).getResources().getString(R.string.game_dialog_exit_batle),(dlgExitBatle.getWidth() - 450)/2,dlgExitBatle.getHeight()/6, 100, 100);
+        AndroidText lblMessageExitBatle = new AndroidText(((AndroidGame) game).getResources().getString(R.string.game_dialog_exit_batle), (dlgExitBatle.getWidth() - 450) / 2, dlgExitBatle.getHeight() / 6, 100, 100);
         lblMessageExitBatle.setColor(Color.RED);
         lblMessageExitBatle.setTextSize(50);
-        AndroidImageButton btn_ok = new AndroidImageButton("OK", 50, dlgExitBatle.getHeight()*4/6 + 30, GUIResourceManager.btn_free_normal.getWidth(), GUIResourceManager.btn_free_normal.getHeight());
+        AndroidImageButton btn_ok = new AndroidImageButton("OK", 50, dlgExitBatle.getHeight() * 4 / 6 + 30, GUIResourceManager.btn_free_normal.getWidth(), GUIResourceManager.btn_free_normal.getHeight());
         btn_ok.setBackgroundNormal(GUIResourceManager.btn_free_normal);
         btn_ok.setBackgroundFocused(GUIResourceManager.btn_free_focus);
         btn_ok.setTextSize(40);
@@ -214,7 +215,7 @@ public class WorldScreen extends Screen {
             }
         });
 
-        AndroidImageButton btn_cancel = new AndroidImageButton("Cancel", dlgExitBatle.getWidth() - GUIResourceManager.btn_free_normal.getWidth() - 50, dlgExitBatle.getHeight()*4/6 + 30, GUIResourceManager.btn_free_normal.getWidth(), GUIResourceManager.btn_free_normal.getHeight());
+        AndroidImageButton btn_cancel = new AndroidImageButton("Cancel", dlgExitBatle.getWidth() - GUIResourceManager.btn_free_normal.getWidth() - 50, dlgExitBatle.getHeight() * 4 / 6 + 30, GUIResourceManager.btn_free_normal.getWidth(), GUIResourceManager.btn_free_normal.getHeight());
         btn_cancel.setBackgroundNormal(GUIResourceManager.btn_free_normal);
         btn_cancel.setBackgroundFocused(GUIResourceManager.btn_free_focus);
         btn_cancel.setTextSize(40);
@@ -227,13 +228,13 @@ public class WorldScreen extends Screen {
             }
         });
 
-        dlgYouWin = new AndroidDialog((game.getScreenWidth() - GUIResourceManager.you_win.getWidth())/2,(game.getScreenHeight() - GUIResourceManager.you_win.getHeight())/2, GUIResourceManager.you_win.getWidth(), GUIResourceManager.you_win.getHeight());
+        dlgYouWin = new AndroidDialog((game.getScreenWidth() - GUIResourceManager.you_win.getWidth()) / 2, (game.getScreenHeight() - GUIResourceManager.you_win.getHeight()) / 2, GUIResourceManager.you_win.getWidth(), GUIResourceManager.you_win.getHeight());
         dlgYouWin.setBackgroundNormal(GUIResourceManager.you_win);
-        dlgYouWin.setY(-GUIResourceManager.you_win.getHeight()/2);
+        dlgYouWin.setY(-GUIResourceManager.you_win.getHeight() / 2);
         dlgYouWin.setVisible(false);
-        dlgYouLose = new AndroidDialog((game.getScreenWidth() - GUIResourceManager.you_lose.getWidth())/2,(game.getScreenHeight() - GUIResourceManager.you_lose.getHeight())/2, GUIResourceManager.you_lose.getWidth(), GUIResourceManager.you_lose.getHeight());
+        dlgYouLose = new AndroidDialog((game.getScreenWidth() - GUIResourceManager.you_lose.getWidth()) / 2, (game.getScreenHeight() - GUIResourceManager.you_lose.getHeight()) / 2, GUIResourceManager.you_lose.getWidth(), GUIResourceManager.you_lose.getHeight());
         dlgYouLose.setBackgroundNormal(GUIResourceManager.you_lose);
-        dlgYouLose.setY(-GUIResourceManager.you_win.getHeight()/2);
+        dlgYouLose.setY(-GUIResourceManager.you_win.getHeight() / 2);
         dlgYouLose.setVisible(false);
 
         dlgYouWin.addComponent(btnMainMenu);
@@ -296,7 +297,7 @@ public class WorldScreen extends Screen {
 
                 @Override
                 public void onDisconnect() {
-                    if(game.getWifiManagerP2P().isServer()){
+                    if (game.getWifiManagerP2P().isServer()) {
                         game.getWifiManagerP2P().getServer().isRun = false;
                     }
                     isOtherDeviceDisconneted = true;
@@ -310,14 +311,14 @@ public class WorldScreen extends Screen {
             map = gameLoader.loadMap("maps/map4.txt",
                     ((TankGame) game).soundManager); // use the ResourceManager
             Settings.resetScores();
-            Settings.loadPreferences((AndroidGame)game);
-            if(Settings.musicEnabled){
+            Settings.loadPreferences((AndroidGame) game);
+            if (Settings.musicEnabled) {
                 ((TankGame) game).soundManager.loadGameMusic();
-                TankSoundManager.setMusicVolume(Settings.musicVolume/100.0f);
+                TankSoundManager.setMusicVolume(Settings.musicVolume / 100.0f);
             }
 
-            miniMap = new MiniMap(0,0, GUIResourceManager.background_mini_map.getWidth(), GUIResourceManager.background_mini_map.getHeight());
-            if(((AndroidGame) game).hasCutout()){
+            miniMap = new MiniMap(20, 20, GUIResourceManager.background_mini_map.getWidth(), GUIResourceManager.background_mini_map.getHeight());
+            if (((AndroidGame) game).hasCutout()) {
                 Point standard = ((AndroidGame) game).m_cutoutHelper.standardizeToSafeX(miniMap.getX(), miniMap.getY());
                 miniMap.setX(standard.x);
                 miniMap.setY(standard.y);
@@ -326,17 +327,18 @@ public class WorldScreen extends Screen {
             miniMap.setRealMapHeight(gameLoader.getRealHeight());
             miniMap.setRealMapPos(gameLoader.getRealPos());
 
+            scoreBoard = new ScoreBoard(game.getScreenWidth() - GUIResourceManager.score_board_bg.getWidth() - 20, 20, GUIResourceManager.score_board_bg.getWidth(), GUIResourceManager.score_board_bg.getHeight());
+
             tank = new Tank(((TankGame) game).soundManager);
 
             tankOther = new Tank(((TankGame) game).soundManager);
             tankOther.setIdleTank(TankResourceManager.TankOther);
 
             tank.setPlayerID(sendReceive.getLocalIP());
-            if(game.getWifiManagerP2P().isServer()){
+            if (game.getWifiManagerP2P().isServer()) {
                 tank.setX(1200);
                 tank.setY(1200);
-            }
-            else{
+            } else {
                 tank.setX(4800);
                 tank.setY(4600);
             }
@@ -347,6 +349,10 @@ public class WorldScreen extends Screen {
 
             miniMap.addPlayer("me", tank);
             miniMap.addPlayer("other", tankOther);
+
+            scoreBoard.addPlayer("me", tank);
+            scoreBoard.addPlayer("other", tankOther);
+
 
             sendReceive.writeObjectJSON(tank.jsonToSendAddPlayer());
 
@@ -365,7 +371,7 @@ public class WorldScreen extends Screen {
         lockUpdates = false;
     }
 
-    public void affterLoadGame(){
+    public void affterLoadGame() {
         ((AndroidGame) game).ShowJoyStick(true);
         ((AndroidGame) game).ShowFireButton(true);
     }
@@ -377,7 +383,7 @@ public class WorldScreen extends Screen {
         if (lockUpdates) return;
         List<TouchEvent> touchEvents = game.getInput().getTouchEvents();
         updateRunning(touchEvents, deltaTime);
-        if (touchEvents ==null || touchEvents.size()==0) return;
+        if (touchEvents == null || touchEvents.size() == 0) return;
         int len = touchEvents.size();
         for (int i = 0; i < len; i++) {
             TouchEvent event = touchEvents.get(i);
@@ -392,7 +398,7 @@ public class WorldScreen extends Screen {
         JoyStickEvent event = ((AndroidGame) game).getJoyStickEvent();
 
         boolean isTankNotMove = CollisionTileAndTankPlayer();
-        if(!isTankNotMove){
+        if (!isTankNotMove) {
             isTankNotMove = CollisionTankPlayerAndTankPlayerOther() && tankOther.isAlive();
         }
 
@@ -431,10 +437,11 @@ public class WorldScreen extends Screen {
         }
 
         try {
-            if (((JSONObject) js.get("me")).has("bullets")){
+            if (((JSONObject) js.get("me")).has("bullets")) {
                 tank.updateBullets(((JSONObject) js.get("me")).getJSONArray("bullets"), false);
             }
             tank.setHealth(((JSONObject) js.get("me")).getInt("heath"));
+            tank.setScore(((JSONObject) js.get("me")).getInt("score"));
 
 
         } catch (JSONException e) {
@@ -444,16 +451,17 @@ public class WorldScreen extends Screen {
         try {
             JSONArray obj = js.getJSONArray("others");
             if (obj.length() > 0) {
-                if(obj.getJSONObject(0).has("id"))
-                    tankOther.setPlayerID( obj.getJSONObject(0).getString("id"));
+                if (obj.getJSONObject(0).has("id"))
+                    tankOther.setPlayerID(obj.getJSONObject(0).getString("id"));
                 tankOther.setX((float) obj.getJSONObject(0).getDouble("x"));
                 tankOther.setY((float) obj.getJSONObject(0).getDouble("y"));
                 tankOther.setDegree((float) obj.getJSONObject(0).getDouble("degree"));
                 tankOther.setHealth(obj.getJSONObject(0).getInt("heath"));
+                tankOther.setScore(obj.getJSONObject(0).getInt("score"));
                 if (obj.getJSONObject(0).has("bullets")) {
                     tankOther.updateBullets(obj.getJSONObject(0).getJSONArray("bullets"), true);
-                    for(Bullet bll:tankOther.getBullets()){
-                        if(!bll.isBeforeVisible() && bll.isVisible()) {
+                    for (Bullet bll : tankOther.getBullets()) {
+                        if (!bll.isBeforeVisible() && bll.isVisible()) {
                             tankOther.setHasFire(true, Utils.distance(tank.getX(), tank.getY(), tankOther.getX(), tankOther.getY()) <= Utils.HEAR_SOUND_RADIUS);
                         }
                     }
@@ -464,15 +472,15 @@ public class WorldScreen extends Screen {
             e.printStackTrace();
         }
 
-        if(tank.getHealth() <= 0 || !game.getWifiManagerP2P().IsWifiEnable()){
-            if(!dlgYouLose.isVisible()){
+        if (tank.getHealth() <= 0 || !game.getWifiManagerP2P().IsWifiEnable()) {
+            if (!dlgYouLose.isVisible()) {
                 dlgYouLose.setVisible(true);
                 ((AndroidGame) game).ShowJoyStick(false);
                 ((AndroidGame) game).ShowFireButton(false);
             }
             dlgYouLose.updateShowVertical();
-        }else if( tankOther.getHealth() <= 0 || (isOtherDeviceDisconneted && game.getWifiManagerP2P().IsWifiEnable())){
-            if(!dlgYouWin.isVisible()){
+        } else if (tankOther.getHealth() <= 0 || (isOtherDeviceDisconneted && game.getWifiManagerP2P().IsWifiEnable())) {
+            if (!dlgYouWin.isVisible()) {
                 dlgYouWin.setVisible(true);
                 ((AndroidGame) game).ShowJoyStick(false);
                 ((AndroidGame) game).ShowFireButton(false);
@@ -523,8 +531,8 @@ public class WorldScreen extends Screen {
                         int k = 0;
                         for (Bullet bll : tank.getBullets()) {
                             if (bll.isVisible() && RecBody2D.CheckCollision(tile.getBody2D(), bll.getBodyToHit2D())) {
-                                if(Utils.distance(tank.getX(), tank.getY(), bll.getX(), bll.getY()) <= Utils.HEAR_SOUND_RADIUS && !bll.isCollision())
-                                    ((TankGame)game).soundManager.playBulletImpactTile();
+                                if (Utils.distance(tank.getX(), tank.getY(), bll.getX(), bll.getY()) <= Utils.HEAR_SOUND_RADIUS && !bll.isCollision())
+                                    ((TankGame) game).soundManager.playBulletImpactTile();
                                 bll.setVisible(false);
                                 bll.setCollision(true);
                                 bll.getFireShotImpact().setX(bll.getX());
@@ -553,8 +561,8 @@ public class WorldScreen extends Screen {
                         int k = 0;
                         for (Bullet bll : tankOther.getBullets()) {
                             if (bll.isVisible() && RecBody2D.CheckCollision(tile.getBody2D(), bll.getBodyToHit2D())) {
-                                if(Utils.distance(tank.getX(), tank.getY(), bll.getX(), bll.getY()) <= Utils.HEAR_SOUND_RADIUS && !bll.isCollision())
-                                    ((TankGame)game).soundManager.playBulletImpactTile();
+                                if (Utils.distance(tank.getX(), tank.getY(), bll.getX(), bll.getY()) <= Utils.HEAR_SOUND_RADIUS && !bll.isCollision())
+                                    ((TankGame) game).soundManager.playBulletImpactTile();
                                 bll.getFireShotImpact().setX(bll.getX());
                                 bll.getFireShotImpact().setY(bll.getY());
                                 bll.getFireShotImpact().setVisible(true);
@@ -574,8 +582,11 @@ public class WorldScreen extends Screen {
             int k = 0;
             for (Bullet bll : tank.getBullets()) {
                 if (bll.isVisible() && RecBody2D.CheckCollision(tankOther.getBodyToHit2D(), bll.getBodyToHit2D())) {
-                    if(!bll.isCollision())
-                        ((TankGame)game).soundManager.playBulletImpactTank();
+                    if (!bll.isCollision()) {
+                        ((TankGame) game).soundManager.playBulletImpactTank();
+                        int score = tank.getScore() + 10;
+                        sendReceive.writeObjectJSON(tank.jsonToSendPlayeScore(score));
+                    }
                     bll.setVisible(false);
                     bll.setCollision(true);
                     bll.getFireShotImpact().setX(bll.getX());
@@ -595,8 +606,8 @@ public class WorldScreen extends Screen {
             int k = 0;
             for (Bullet bll : tankOther.getBullets()) {
                 if (bll.isVisible() && RecBody2D.CheckCollision(tank.getBodyToHit2D(), bll.getBodyToHit2D())) {
-                    if(!bll.isCollision())
-                        ((TankGame)game).soundManager.playBulletImpactTank();
+                    if (!bll.isCollision())
+                        ((TankGame) game).soundManager.playBulletImpactTank();
                     bll.getFireShotImpact().setX(bll.getX());
                     bll.getFireShotImpact().setY(bll.getY());
                     bll.getFireShotImpact().setVisible(true);
@@ -621,11 +632,12 @@ public class WorldScreen extends Screen {
     private void drawRunningUI() {
         renderer.draw(gameCanvas, map, backgroundMap, foregroundMap,
                 frameBuffer.getWidth(), frameBuffer.getHeight());
-
-        dlgYouWin.draw(gameCanvas,0, 0);
-        dlgYouLose.draw(gameCanvas,0, 0);
-        dlgExitBatle.draw(gameCanvas, 0, 0);
         miniMap.draw(gameCanvas, 0, 0);
+        scoreBoard.draw(gameCanvas, 0, 0);
+        dlgYouWin.draw(gameCanvas, 0, 0);
+        dlgYouLose.draw(gameCanvas, 0, 0);
+        dlgExitBatle.draw(gameCanvas, 0, 0);
+
 
         //GameRenderer.drawStringDropShadowAsEntity(gameCanvas, "WORLD-1",  worldLocations[0]+8, 100,0,0);
         //GameRenderer.drawStringDropShadowAsEntity(gameCanvas, "WORLD-2",  worldLocations[1]+8, 100,0,0);
@@ -662,9 +674,9 @@ public class WorldScreen extends Screen {
 
     @Override
     public void onBackPressed() {
-        if(dlgExitBatle.isVisible()){
+        if (dlgExitBatle.isVisible()) {
             dlgExitBatle.setVisible(false);
-        }else {
+        } else {
             dlgExitBatle.setVisible(true);
         }
     }

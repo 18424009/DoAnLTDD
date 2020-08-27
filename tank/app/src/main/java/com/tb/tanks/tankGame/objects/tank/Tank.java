@@ -57,6 +57,7 @@ public class Tank extends Sprite {
     private static final float STARTING_DY = .03f;
     private static final int STARTING_LIFE = 3;
     private static final int ANIM_TIME = 125;
+    private int score = 0;
     public TileMap map;
     /*boolean variable to identify if fireball is to be fired*/
 
@@ -187,6 +188,14 @@ public class Tank extends Sprite {
         for (Bullet bll : bullets) {
             bll.setId(playerID);
         }
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public ArrayList<FireShotFlame> getFireShotFlames() {
@@ -493,6 +502,19 @@ public class Tank extends Sprite {
             json.put("playerID", this.getPlayerID());
             json.put("heath", this.getHealth());
             json.put("TYPE_MESSAGE", MESSAGE_TANK_PLAYER_HEATH);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return json.toString();
+    }
+
+    public String jsonToSendPlayeScore(int score){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("playerID", this.getPlayerID());
+            json.put("score", score);
+            json.put("TYPE_MESSAGE", MESSAGE_TANK_PLAYER_SCORE);
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -13,6 +13,7 @@ import java.util.Stack;
 
 public class PlayerInfo {
     private String playerID;
+    private int score;
     private float x;
     private float y;
     private float angle;
@@ -27,7 +28,8 @@ public class PlayerInfo {
     private Stack<Bullet> bullets;
     private ArrayList<FireShotFlame> fireShotFlames;
 
-    public PlayerInfo(){
+    public PlayerInfo() {
+        score = 0;
         heath = PlayerDefine.PLAYER_HEATH;
         speed = 400.f;
         isAdded = false;
@@ -48,6 +50,14 @@ public class PlayerInfo {
             fireShotFlame.setY(this.y);
             fireShotFlames.add(fireShotFlame);
         }
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public boolean isAdded() {
@@ -147,7 +157,7 @@ public class PlayerInfo {
         this.power = power;
     }
 
-    public void fire(){
+    public void fire() {
         for (Bullet bll : bullets) {
             if (!bll.isVisible()) {
                 float rdi = (float) Math.toRadians(degree);
@@ -164,28 +174,28 @@ public class PlayerInfo {
         }
     }
 
-    public void eraseBulletWhenCollision(int index){
+    public void eraseBulletWhenCollision(int index) {
         bullets.get(index).setVisible(false);
     }
 
-    public void update(float deltaTime){
-        if(!isNotMove && power > 0){
-            x += deltaTime*speed*(float)Math.sin(angle - Math.PI/2);
-            y -= deltaTime*speed*(float)Math.cos(angle - Math.PI/2);
+    public void update(float deltaTime) {
+        if (!isNotMove && power > 0) {
+            x += deltaTime * speed * (float) Math.sin(angle - Math.PI / 2);
+            y -= deltaTime * speed * (float) Math.cos(angle - Math.PI / 2);
         }
 
         for (Bullet bll : bullets) {
-            if (bll.isVisible()){
+            if (bll.isVisible()) {
                 bll.update(null, deltaTime);
             }
         }
-        this.setDegree((float)Math.toDegrees(angle - Math.PI/2));
+        this.setDegree((float) Math.toDegrees(angle - Math.PI / 2));
     }
 
-    public JSONObject serializeForUpdate(){
-        JSONObject  result = new JSONObject();
+    public JSONObject serializeForUpdate() {
+        JSONObject result = new JSONObject();
         JSONArray jsonBulletsArray = new JSONArray();
-        for(Bullet bll:bullets){
+        for (Bullet bll : bullets) {
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("x", bll.getX());
@@ -204,6 +214,7 @@ public class PlayerInfo {
             result.put("x", x);
             result.put("y", y);
             result.put("degree", degree);
+            result.put("score", score);
             result.put("bullets", jsonBulletsArray);
             result.put("heath", this.heath);
         } catch (JSONException e) {

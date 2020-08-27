@@ -38,6 +38,8 @@ public class GUIResourceManager {
     public static Bitmap background_mini_map;
     public static Bitmap tank_mini_map;
     public static Bitmap tank_other_mini_map;
+    public static Bitmap score_board_title;
+    public static Bitmap score_board_bg;
 
     public GUIResourceManager(Activity pActivity) {
         activity = pActivity;
@@ -70,6 +72,8 @@ public class GUIResourceManager {
         background_mini_map = loadImage("gui/mini_map/mini_map_boder.png");
         tank_mini_map = loadImage("gui/mini_map/player_minimap_small_blur.png");
         tank_other_mini_map = loadImage("gui/mini_map/player_other_mini_map_small.png");
+        score_board_bg = loadImage("gui/score_board/score_board_bg.png");
+        score_board_title = loadImage("gui/score_board/Scoreboar_tille.png");
     }
 
     public void LoadResourceLoadings() {

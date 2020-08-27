@@ -79,6 +79,13 @@ public class Server extends Thread {
                         }
                         break;
                     }
+                    case P2PMessage.MESSAGE_TANK_PLAYER_SCORE: {
+                        PlayerInfo player = players.get(playerId);
+                        if (player != null) {
+                            player.setScore(json.getInt("score"));
+                        }
+                        break;
+                    }
                     case P2PMessage.MESSAGE_DISCONNECT: {
                         PlayerInfo player = players.get(playerId);
                         if (player != null) {

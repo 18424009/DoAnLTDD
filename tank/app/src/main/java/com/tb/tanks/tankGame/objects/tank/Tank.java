@@ -610,6 +610,20 @@ public class Tank extends Sprite {
         return json.toString();
     }
 
+    public String jsonToSendUpdatePlayerPower(float powerToSend){
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("playerID", this.getPlayerID());
+            json.put("power", powerToSend);
+            json.put("TYPE_MESSAGE", MESSAGE_PLAYER_INPUT_POWER);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return json.toString();
+    }
+
 
 
 }

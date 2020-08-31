@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GameState {
-    private static final int RENDER_DELAY = 100;
+    private static final int RENDER_DELAY = 1;
     private ArrayList<JSONObject> gameUpdates = new ArrayList<JSONObject>();
     private long gameStart = 0;
     private long firstServerTimestamp = 0;
@@ -25,7 +25,7 @@ public class GameState {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            gameStart = System.nanoTime();
+            gameStart = System.currentTimeMillis();
         }
 
         gameUpdates.add(update);
@@ -42,7 +42,7 @@ public class GameState {
     }
 
     public long currentServerTime() {
-        return firstServerTimestamp + (System.nanoTime() - gameStart) - RENDER_DELAY;
+        return firstServerTimestamp + (System.currentTimeMillis() - gameStart) - RENDER_DELAY;
     }
 
     public int getBaseUpdate() {
@@ -106,7 +106,7 @@ public class GameState {
 
     public float interpolateDegree(float degree1, float degree2, float ratio) {
         float absD = Math.abs(degree1 - degree2);
-        if (absD >= Math.PI) {
+        if (absD >= 180) {
             // The angle between the directions is large - we should rotate the other way
             if (degree1 > degree2) {
                 return degree1 + (degree2 + 2 * 180 - degree1) * ratio;

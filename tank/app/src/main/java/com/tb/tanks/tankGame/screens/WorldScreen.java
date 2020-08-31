@@ -425,11 +425,6 @@ public class WorldScreen extends Screen {
         }
         if (event.direction != JoyStick.DIRECTION_CENTER && tank.isAlive()) {
             float powerToSend = 0.0f;
-            try {
-                tank.setDegree((float) ((JSONObject) js.get("me")).getDouble("degree"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
             if (!isTankNotMove) {
                 powerToSend = (float) event.power;
             }
@@ -442,7 +437,7 @@ public class WorldScreen extends Screen {
             }
 
         } else {
-            sendReceive.writeObjectJSON(tank.jsonToSendUpdatePlayer(Math.toRadians(tank.getDegree()) + Math.PI / 2, 0, isTankNotMove));
+            sendReceive.writeObjectJSON(tank.jsonToSendUpdatePlayerPower( 0));
         }
 
         if (eventWeapon.direction != JoyStick.DIRECTION_CENTER && tank.isAlive()) {
@@ -488,6 +483,7 @@ public class WorldScreen extends Screen {
 
             tank.setX((float) ((JSONObject) js.get("me")).getDouble("x"));
             tank.setY((float) ((JSONObject) js.get("me")).getDouble("y"));
+            tank.setDegree((float) ((JSONObject) js.get("me")).getDouble("degree"));
 
 
         } catch (JSONException e) {

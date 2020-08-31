@@ -91,6 +91,10 @@ public class WorldScreen extends Screen {
     boolean isOtherDeviceDisconneted = false;
     private MiniMap miniMap;
     private ScoreBoard scoreBoard;
+    private float WEAPON_SPEED = 0.03f;
+    private float saveWeaponDegree = 0;
+    private float deltaDegree = 0;
+    private float eventDegree = 90;
 
 
     public WorldScreen(final Game game) {
@@ -180,6 +184,8 @@ public class WorldScreen extends Screen {
             public void onClick(Component source) {
                 ((AndroidGame) game).ShowJoyStick(false);
                 ((AndroidGame) game).ShowFireButton(false);
+                ((AndroidGame) game).ShowJoyStickWeapon(false);
+
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -330,9 +336,11 @@ public class WorldScreen extends Screen {
             scoreBoard = new ScoreBoard(game.getScreenWidth() - GUIResourceManager.score_board_bg.getWidth() - 20, 20, GUIResourceManager.score_board_bg.getWidth(), GUIResourceManager.score_board_bg.getHeight());
 
             tank = new Tank(((TankGame) game).soundManager);
+            saveWeaponDegree = tank.getWeapon().getDegree() + 90;
 
             tankOther = new Tank(((TankGame) game).soundManager);
             tankOther.setIdleTank(TankResourceManager.TankOther);
+            tankOther.getWeapon().setIdleWeapon(TankResourceManager.WeaponOther);
 
             tank.setPlayerID(sendReceive.getLocalIP());
             if (game.getWifiManagerP2P().isServer()) {
@@ -342,7 +350,6 @@ public class WorldScreen extends Screen {
                 tank.setX(4800);
                 tank.setY(4600);
             }
-
 
             tankOther.setX(-3000);
             tankOther.setY(-3000);
@@ -374,6 +381,8 @@ public class WorldScreen extends Screen {
     public void affterLoadGame() {
         ((AndroidGame) game).ShowJoyStick(true);
         ((AndroidGame) game).ShowFireButton(true);
+        ((AndroidGame) game).ShowJoyStickWeapon(true);
+
     }
 
 
@@ -396,6 +405,7 @@ public class WorldScreen extends Screen {
 
     private void updateRunning(List<TouchEvent> touchEvents, float deltaTime) {
         JoyStickEvent event = ((AndroidGame) game).getJoyStickEvent();
+        JoyStickEvent eventWeapon = ((AndroidGame) game).getJoyStickEventWeapon();
 
         boolean isTankNotMove = CollisionTileAndTankPlayer();
         if (!isTankNotMove) {
@@ -422,18 +432,50 @@ public class WorldScreen extends Screen {
             }
             if (!isTankNotMove) {
                 powerToSend = (float) event.power;
-                try {
-                    tank.setX((float) ((JSONObject) js.get("me")).getDouble("x"));
-                    tank.setY((float) ((JSONObject) js.get("me")).getDouble("y"));
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            }
+            eventDegree = (float) Math.toDegrees(event.angle);
+            sendReceive.writeObjectJSON(tank.jsonToSendUpdatePlayer(event.angle, powerToSend, isTankNotMove));
+            if (eventWeapon.direction == JoyStick.DIRECTION_CENTER) {
+                saveWeaponDegree = (float) (Math.toDegrees(event.angle) + deltaDegree);
+                float realAngle = (float) Math.toRadians(saveWeaponDegree);
+                sendReceive.writeObjectJSON(tank.jsonToSendPlayeWeapon(realAngle));
             }
 
-            sendReceive.writeObjectJSON(tank.jsonToSendUpdatePlayer(event.angle, powerToSend, isTankNotMove));
         } else {
             sendReceive.writeObjectJSON(tank.jsonToSendUpdatePlayer(Math.toRadians(tank.getDegree()) + Math.PI / 2, 0, isTankNotMove));
+        }
+
+        if (eventWeapon.direction != JoyStick.DIRECTION_CENTER && tank.isAlive()) {
+            float realAngle = (float) Math.toRadians(saveWeaponDegree);
+
+            float degreeStandard = (float) Math.toDegrees(eventWeapon.angle);
+
+            float saveWeaponDegreeStandard = saveWeaponDegree;
+            if (degreeStandard < 0) {
+                degreeStandard = 360.f + degreeStandard;
+            }
+            if (saveWeaponDegreeStandard < 0) {
+                saveWeaponDegreeStandard = 360.f + saveWeaponDegreeStandard;
+            }
+
+            float subD = (degreeStandard - saveWeaponDegreeStandard);
+            float sub360 = 360.f - Math.abs(subD);
+            if (degreeStandard > saveWeaponDegreeStandard) {
+                sub360 = -sub360;
+            }
+
+            float standardD = Math.abs(sub360) < Math.abs(subD) ? sub360 : subD;
+            saveWeaponDegree += (standardD) * WEAPON_SPEED;
+            saveWeaponDegree %= 360;
+
+            if (eventDegree < 0) {
+                eventDegree += 360.f;
+            }
+            deltaDegree = saveWeaponDegree - eventDegree;
+
+            sendReceive.writeObjectJSON(tank.jsonToSendPlayeWeapon(realAngle));
+        } else {
+            //sendReceive.writeObjectJSON(tank.jsonToSendPlayeWeapon(Math.toRadians(tank.getWeapon().getDegree()) + Math.PI / 2));
         }
 
         try {
@@ -442,6 +484,10 @@ public class WorldScreen extends Screen {
             }
             tank.setHealth(((JSONObject) js.get("me")).getInt("heath"));
             tank.setScore(((JSONObject) js.get("me")).getInt("score"));
+            tank.setWeaponDegree((float) ((JSONObject) js.get("me")).getDouble("degreeWeapon"));
+
+            tank.setX((float) ((JSONObject) js.get("me")).getDouble("x"));
+            tank.setY((float) ((JSONObject) js.get("me")).getDouble("y"));
 
 
         } catch (JSONException e) {
@@ -458,6 +504,7 @@ public class WorldScreen extends Screen {
                 tankOther.setDegree((float) obj.getJSONObject(0).getDouble("degree"));
                 tankOther.setHealth(obj.getJSONObject(0).getInt("heath"));
                 tankOther.setScore(obj.getJSONObject(0).getInt("score"));
+                tankOther.setWeaponDegree((float) obj.getJSONObject(0).getDouble("degreeWeapon"));
                 if (obj.getJSONObject(0).has("bullets")) {
                     tankOther.updateBullets(obj.getJSONObject(0).getJSONArray("bullets"), true);
                     for (Bullet bll : tankOther.getBullets()) {
@@ -477,6 +524,8 @@ public class WorldScreen extends Screen {
                 dlgYouLose.setVisible(true);
                 ((AndroidGame) game).ShowJoyStick(false);
                 ((AndroidGame) game).ShowFireButton(false);
+                ((AndroidGame) game).ShowJoyStickWeapon(false);
+
             }
             dlgYouLose.updateShowVertical();
         } else if (tankOther.getHealth() <= 0 || (isOtherDeviceDisconneted && game.getWifiManagerP2P().IsWifiEnable())) {
@@ -484,6 +533,7 @@ public class WorldScreen extends Screen {
                 dlgYouWin.setVisible(true);
                 ((AndroidGame) game).ShowJoyStick(false);
                 ((AndroidGame) game).ShowFireButton(false);
+                ((AndroidGame) game).ShowJoyStickWeapon(false);
             }
             dlgYouWin.updateShowVertical();
         }

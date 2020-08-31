@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.PointF;
 
 import com.tb.tanks.physic.RecBody2D;
-import com.tb.tanks.tankGame.core.TankGame;
 import com.tb.tanks.tankGame.core.TankResourceManager;
 import com.tb.tanks.tankGame.core.TankSoundManager;
 import com.tb.tanks.tankGame.core.animation.Animation;
@@ -24,7 +23,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import static com.tb.tanks.ConnectionP2P.P2PMessage.*;
+import static com.tb.tanks.ConnectionP2P.P2PMessage.MESSAGE_PLAYER_FIRE_FLAME_HIDE;
+import static com.tb.tanks.ConnectionP2P.P2PMessage.MESSAGE_PLAYER_INPUT_FIRE;
+import static com.tb.tanks.ConnectionP2P.P2PMessage.MESSAGE_PLAYER_INPUT_MOVE;
+import static com.tb.tanks.ConnectionP2P.P2PMessage.MESSAGE_PLAYER_INPUT_POWER;
+import static com.tb.tanks.ConnectionP2P.P2PMessage.MESSAGE_TANK_ADD_PLAYER;
+import static com.tb.tanks.ConnectionP2P.P2PMessage.MESSAGE_TANK_PLAYER_HEATH;
+import static com.tb.tanks.ConnectionP2P.P2PMessage.MESSAGE_TANK_PLAYER_SCORE;
+import static com.tb.tanks.ConnectionP2P.P2PMessage.MESSAGE_TANK_PLAYER_WEAPON;
 
 
 /**
@@ -89,8 +95,8 @@ public class Tank extends Sprite {
     private Stack<Bullet> bullets = new Stack<>();
     private ArrayList<FireShotFlame> fireShotFlames;
     private String playerID = "";
-    private long startFire = 0;
-    final static private long timeFire = 400;
+
+
     private HealthBar healthBar;
     private Explosion explosion;
 
@@ -143,7 +149,7 @@ public class Tank extends Sprite {
         weapon.setY(this.y);
         weapon.setDegree(degree);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             Bullet bll = new Bullet(soundManager);
             bll.setDegree(degree);
             bll.setX(this.x);
@@ -219,13 +225,13 @@ public class Tank extends Sprite {
 
         for (FireShotFlame fireShotFlame : fireShotFlames) {
             //if (!fireShotFlame.isVisible()) {
-                float rdi = (float) Math.toRadians(weapon.getDegree());
-                float s = (float) Math.sin(rdi);
-                float c = (float) Math.cos(rdi);
-                float xnew = 0 * c +  (getHeight()/2 + 30) * s;
-                fireShotFlame.setX(x + xnew);
-                fireShotFlame.setDegree(weapon.getDegree());
-                break;
+            float rdi = (float) Math.toRadians(weapon.getDegree());
+            float s = (float) Math.sin(rdi);
+            float c = (float) Math.cos(rdi);
+            float xnew = 0 * c + (getHeight() / 2 + 30) * s;
+            fireShotFlame.setX(x + xnew);
+            fireShotFlame.setDegree(weapon.getDegree());
+            break;
             //}
         }
     }
@@ -241,14 +247,14 @@ public class Tank extends Sprite {
 
         for (FireShotFlame fireShotFlame : fireShotFlames) {
             //if (!fireShotFlame.isVisible()) {
-                float rdi = (float) Math.toRadians(weapon.getDegree());
-                float s = (float) Math.sin(rdi);
-                float c = (float) Math.cos(rdi);
-                float ynew = 0 * s -  (getHeight()/2 + 30) * c;
-                fireShotFlame.setY(y + ynew);
-                fireShotFlame.setDegree(weapon.getDegree());
-                break;
-           // }
+            float rdi = (float) Math.toRadians(weapon.getDegree());
+            float s = (float) Math.sin(rdi);
+            float c = (float) Math.cos(rdi);
+            float ynew = 0 * s - (getHeight() / 2 + 30) * c;
+            fireShotFlame.setY(y + ynew);
+            fireShotFlame.setDegree(weapon.getDegree());
+            break;
+            // }
         }
 
     }
@@ -262,15 +268,15 @@ public class Tank extends Sprite {
 
         for (FireShotFlame fireShotFlame : fireShotFlames) {
             //if (!fireShotFlame.isVisible()) {
-                float rdi = (float) Math.toRadians(weapon.getDegree());
-                float s = (float) Math.sin(rdi);
-                float c = (float) Math.cos(rdi);
-                float xnew = 0 * c +  (getHeight()/2 + 30) * s;
-                float ynew = 0 * s -  (getHeight()/2 + 30) * c;
-                fireShotFlame.setX(x + xnew);
-                fireShotFlame.setY(y + ynew);
-                fireShotFlame.setDegree(weapon.getDegree());
-                break;
+            float rdi = (float) Math.toRadians(weapon.getDegree());
+            float s = (float) Math.sin(rdi);
+            float c = (float) Math.cos(rdi);
+            float xnew = 0 * c + (getHeight() / 2 + 30) * s;
+            float ynew = 0 * s - (getHeight() / 2 + 30) * c;
+            fireShotFlame.setX(x + xnew);
+            fireShotFlame.setY(y + ynew);
+            fireShotFlame.setDegree(weapon.getDegree());
+            break;
             //}
         }
     }
@@ -284,31 +290,24 @@ public class Tank extends Sprite {
     }
 
     public void setHasFire(boolean hasFire, boolean shouldPlaySound) {
-        if(hasFire && isAlive){
-            long now = System.currentTimeMillis();
-            long deltaFire = now - startFire;
-
-            if( deltaFire > timeFire){
-                this.hasFire = hasFire;
-                startFire = now;
-                for (FireShotFlame fireShotFlame : fireShotFlames) {
-                    if (!fireShotFlame.isVisible()) {
-                        if(shouldPlaySound)
-                            soundManager.playTankFire();
-                        fireShotFlame.setVisible(true);
-                        break;
-                    }
+        if (hasFire && isAlive) {
+            this.hasFire = hasFire;
+            for (FireShotFlame fireShotFlame : fireShotFlames) {
+                if (!fireShotFlame.isVisible()) {
+                    if (shouldPlaySound)
+                        soundManager.playTankFire();
+                    fireShotFlame.setVisible(true);
+                    break;
                 }
             }
-        }
-        else{
+        } else {
             this.hasFire = false;
         }
     }
 
     @Override
     public void draw(Canvas g, float x, float y, float offsetX, float offsetY) {
-        if(isAlive) {
+        if (isAlive) {
             draw(g, x + offsetX, y + offsetY);
             weapon.draw(g, x + offsetX, y + offsetY);
             bodyToMove2D.draw(g, x, y);
@@ -316,7 +315,7 @@ public class Tank extends Sprite {
         }
     }
 
-    public void drawFireShotFlames(Canvas g, float x, float y){
+    public void drawFireShotFlames(Canvas g, float x, float y) {
         for (FireShotFlame fireShotFlame : fireShotFlames) {
             fireShotFlame.draw(g, x + fireShotFlame.getX(), y + fireShotFlame.getY());
         }
@@ -325,7 +324,7 @@ public class Tank extends Sprite {
     public void drawBullets(Canvas g, float x, float y) {
         for (Bullet bll : bullets) {
             bll.draw(g, x + bll.getX(), y + bll.getY());
-            bll.getFireShotImpact().draw(g,x + bll.getFireShotImpact().getX(), y + bll.getFireShotImpact().getY());
+            bll.getFireShotImpact().draw(g, x + bll.getFireShotImpact().getX(), y + bll.getFireShotImpact().getY());
         }
     }
 
@@ -345,14 +344,13 @@ public class Tank extends Sprite {
     public void setHealth(int health) {
         this.health = health;
         healthBar.setHealthCurrent(health);
-        if(health <=0){
-            if(isAlive){
+        if (health <= 0) {
+            if (isAlive) {
                 soundManager.playTankExplosion();
                 explosion.setVisible(true);
             }
             isAlive = false;
-        }
-        else isAlive = true;
+        } else isAlive = true;
     }
 
 
@@ -365,7 +363,7 @@ public class Tank extends Sprite {
     }
 
     public String fire() {
-        return "{playerID: " + this.getPlayerID() + ", isFire: true, TYPE_MESSAGE: "+ MESSAGE_PLAYER_INPUT_FIRE +"}" ;
+        return "{playerID: " + this.getPlayerID() + ", isFire: true, TYPE_MESSAGE: " + MESSAGE_PLAYER_INPUT_FIRE + "}";
     }
 
 
@@ -379,7 +377,7 @@ public class Tank extends Sprite {
 
 
     public void update(TileMap map, float time) {
-        if(isAlive) {
+        if (isAlive) {
             update(map, time, false);
 
             for (FireShotFlame fireShotFlame : fireShotFlames) {
@@ -394,7 +392,7 @@ public class Tank extends Sprite {
         }
 
         for (Bullet bll : bullets) {
-            if (bll.isVisible()){
+            if (bll.isVisible()) {
                 bll.getBodyToHit2D().setParentX(bll.getX());
                 bll.getBodyToHit2D().setParentY(bll.getY());
             }
@@ -404,31 +402,31 @@ public class Tank extends Sprite {
 //            if (!bll.isVisible()) {
 //                bll.setDegree(weapon.getDegree());
 //            }
-            bll.getFireShotImpact().update((int)time);
+            bll.getFireShotImpact().update((int) time);
         }
 
-        explosion.update((int)time);
+        explosion.update((int) time);
     }
 
     public void update(TileMap map, float time, boolean lockInput) {
 
     }
 
-    public void updateBullets(JSONArray bulletsJSON, boolean isOther){
-        if(bulletsJSON == null || bulletsJSON.length() <= 0) return;
+    public void updateBullets(JSONArray bulletsJSON, boolean isOther) {
+        if (bulletsJSON == null || bulletsJSON.length() <= 0) return;
         int i = 0;
-        for(Bullet bll:bullets){
+        for (Bullet bll : bullets) {
             try {
                 JSONObject obj = (JSONObject) bulletsJSON.get(i);
                 bll.setX((float) obj.getDouble("x"));
                 bll.setY((float) obj.getDouble("y"));
                 bll.setDegree((float) obj.getDouble("degree"));
                 bll.setVisible(obj.getBoolean("isVisible"));
-                if(!obj.getBoolean("isVisible")){
+                if (!obj.getBoolean("isVisible")) {
                     bll.setCollision(false);
                 }
 
-                if(!bll.isVisible() && bll.isBeforeVisible() && isOther){
+                if (!bll.isVisible() && bll.isBeforeVisible() && isOther) {
                     bll.getFireShotImpact().setX(bll.getX());
                     bll.getFireShotImpact().setY(bll.getY());
                     bll.getFireShotImpact().setVisible(true);
@@ -440,10 +438,10 @@ public class Tank extends Sprite {
         }
     }
 
-    public void updateFireFlames(JSONArray fireFlamesJson){
-        if(fireFlamesJson == null || fireFlamesJson.length() <= 0) return;
+    public void updateFireFlames(JSONArray fireFlamesJson) {
+        if (fireFlamesJson == null || fireFlamesJson.length() <= 0) return;
         int i = 0;
-        for(FireShotFlame fireShotFlame:fireShotFlames){
+        for (FireShotFlame fireShotFlame : fireShotFlames) {
             try {
                 JSONObject obj = (JSONObject) fireFlamesJson.get(i);
                 fireShotFlame.setX((float) obj.getDouble("x"));
@@ -460,7 +458,7 @@ public class Tank extends Sprite {
 
     public void getsDamaged(int dame) {
         this.health -= dame;
-        if(health < 0 ){
+        if (health < 0) {
             health = 0;
         }
         this.setHealth(health);
@@ -482,15 +480,15 @@ public class Tank extends Sprite {
         isAlive = alive;
     }
 
-    public void setWeaponDegree(float degree){
+    public void setWeaponDegree(float degree) {
         weapon.setDegree(degree);
         for (FireShotFlame fireShotFlame : fireShotFlames) {
             //if (!fireShotFlame.isVisible()) {
             float rdi = (float) Math.toRadians(weapon.getDegree());
             float s = (float) Math.sin(rdi);
             float c = (float) Math.cos(rdi);
-            float xnew = 0 * c +  (getHeight()/2 + 30) * s;
-            float ynew = 0 * s -  (getHeight()/2 + 30) * c;
+            float xnew = 0 * c + (getHeight() / 2 + 30) * s;
+            float ynew = 0 * s - (getHeight() / 2 + 30) * c;
             fireShotFlame.setX(x + xnew);
             fireShotFlame.setY(y + ynew);
             fireShotFlame.setDegree(weapon.getDegree());
@@ -510,7 +508,7 @@ public class Tank extends Sprite {
         //isSystemDriven=false;
     }
 
-    public String jsonToSendAddPlayer(){
+    public String jsonToSendAddPlayer() {
         JSONObject json = new JSONObject();
         try {
             json.put("playerID", this.getPlayerID());
@@ -529,7 +527,7 @@ public class Tank extends Sprite {
         return json.toString();
     }
 
-    public String jsonToSendPlayerHeath(){
+    public String jsonToSendPlayerHeath() {
         JSONObject json = new JSONObject();
         try {
             json.put("playerID", this.getPlayerID());
@@ -542,7 +540,7 @@ public class Tank extends Sprite {
         return json.toString();
     }
 
-    public String jsonToSendPlayeScore(int score){
+    public String jsonToSendPlayeScore(int score) {
         JSONObject json = new JSONObject();
         try {
             json.put("playerID", this.getPlayerID());
@@ -555,7 +553,7 @@ public class Tank extends Sprite {
         return json.toString();
     }
 
-    public String jsonToSendPlayeWeapon(double angleWeapon){
+    public String jsonToSendPlayeWeapon(double angleWeapon) {
         JSONObject json = new JSONObject();
         try {
             json.put("playerID", this.getPlayerID());
@@ -568,10 +566,10 @@ public class Tank extends Sprite {
         return json.toString();
     }
 
-    public String jsonToSendUpdateFireFlames(){
+    public String jsonToSendUpdateFireFlames() {
         JSONObject json = new JSONObject();
         JSONArray jsonFireFlames = new JSONArray();
-        for(FireShotFlame fireShotFlame:fireShotFlames){
+        for (FireShotFlame fireShotFlame : fireShotFlames) {
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("x", fireShotFlame.getX());
@@ -594,7 +592,7 @@ public class Tank extends Sprite {
         return json.toString();
     }
 
-    public String jsonToSendUpdatePlayer(double angle, float powerToSend, boolean isTankNotMove){
+    public String jsonToSendUpdatePlayer(double angle, float powerToSend, boolean isTankNotMove) {
         JSONObject json = new JSONObject();
 
         try {
@@ -610,7 +608,7 @@ public class Tank extends Sprite {
         return json.toString();
     }
 
-    public String jsonToSendUpdatePlayerPower(float powerToSend){
+    public String jsonToSendUpdatePlayerPower(float powerToSend) {
         JSONObject json = new JSONObject();
 
         try {
@@ -623,7 +621,6 @@ public class Tank extends Sprite {
 
         return json.toString();
     }
-
 
 
 }

@@ -86,7 +86,7 @@ public class GuiMenuScreen extends Screen implements PeersAvailableListener {
 
         Bitmap imgSettingNormal = TankResourceManager.loadImage("gui/btn_settings_normal.png");
         Bitmap imgSettingFocus = TankResourceManager.loadImage("gui/btn_settings_focus.png");
-        btnSetting = new AndroidImageButton("", width - imgSettingNormal.getWidth() - 10, 15, imgSettingNormal.getWidth(), imgSettingNormal.getHeight());
+        btnSetting = new AndroidImageButton("", width - imgSettingNormal.getWidth() - 20, 20, imgSettingNormal.getWidth(), imgSettingNormal.getHeight());
         btnSetting.setBackgroundNormal(imgSettingNormal);
         btnSetting.setBackgroundFocused(imgSettingFocus);
 
@@ -102,7 +102,7 @@ public class GuiMenuScreen extends Screen implements PeersAvailableListener {
         androidAbout.setStrings(gameLoader.loadAbout("gui/about.txt"));
 
 
-        btnAbout = new AndroidImageButton("", 10, 15, GUIResourceManager.btn_about_normal.getWidth(), GUIResourceManager.btn_about_normal.getHeight());
+        btnAbout = new AndroidImageButton("", 20, 20, GUIResourceManager.btn_about_normal.getWidth(), GUIResourceManager.btn_about_normal.getHeight());
         btnAbout.setBackgroundNormal(GUIResourceManager.btn_about_normal);
         btnAbout.setBackgroundFocused(GUIResourceManager.btn_about_focus);
         if(((AndroidGame) game).hasCutout()){

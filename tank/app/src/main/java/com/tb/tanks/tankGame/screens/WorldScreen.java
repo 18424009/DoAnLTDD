@@ -95,6 +95,8 @@ public class WorldScreen extends Screen {
     private float saveWeaponDegree = 0;
     private float deltaDegree = 0;
     private float eventDegree = 90;
+    final static private long timeFire = 400;
+    private long startFire = 0;
 
 
     public WorldScreen(final Game game) {
@@ -142,8 +144,20 @@ public class WorldScreen extends Screen {
         ((AndroidGame) game).getFireButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (tank != null)
-                    tank.setHasFire(true, true);
+                if (tank != null){
+                    long now = System.currentTimeMillis();
+                    long deltaFire = now - startFire;
+                    if( deltaFire > timeFire) {
+                        startFire = now;
+                        Thread send = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                sendReceive.writeObjectJSON(tank.fire());
+                            }
+                        });
+                        send.start();
+                    }
+                }
             }
         });
 
@@ -420,7 +434,6 @@ public class WorldScreen extends Screen {
         JSONObject js = gameState.getCurrentState();
         //System.out.println(js.toString());
         if (tank.getHasFire()) {
-            sendReceive.writeObjectJSON(tank.fire());
             tank.setHasFire(false, false);
         }
         if (event.direction != JoyStick.DIRECTION_CENTER && tank.isAlive()) {
@@ -474,17 +487,23 @@ public class WorldScreen extends Screen {
         }
 
         try {
-            if (((JSONObject) js.get("me")).has("bullets")) {
-                tank.updateBullets(((JSONObject) js.get("me")).getJSONArray("bullets"), false);
+            JSONObject me = ((JSONObject) js.get("me"));
+
+            tank.setHealth(me.getInt("heath"));
+            tank.setScore(me.getInt("score"));
+            tank.setWeaponDegree((float) me.getDouble("degreeWeapon"));
+
+            tank.setX((float) me.getDouble("x"));
+            tank.setY((float) me.getDouble("y"));
+            tank.setDegree((float) me.getDouble("degree"));
+            if (me.has("bullets")) {
+                tank.updateBullets(me.getJSONArray("bullets"), false);
+                for (Bullet bll : tank.getBullets()) {
+                    if (!bll.isBeforeVisible() && bll.isVisible()) {
+                        tank.setHasFire(true, true);
+                    }
+                }
             }
-            tank.setHealth(((JSONObject) js.get("me")).getInt("heath"));
-            tank.setScore(((JSONObject) js.get("me")).getInt("score"));
-            tank.setWeaponDegree((float) ((JSONObject) js.get("me")).getDouble("degreeWeapon"));
-
-            tank.setX((float) ((JSONObject) js.get("me")).getDouble("x"));
-            tank.setY((float) ((JSONObject) js.get("me")).getDouble("y"));
-            tank.setDegree((float) ((JSONObject) js.get("me")).getDouble("degree"));
-
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -579,7 +598,6 @@ public class WorldScreen extends Screen {
                             if (bll.isVisible() && RecBody2D.CheckCollision(tile.getBody2D(), bll.getBodyToHit2D())) {
                                 if (Utils.distance(tank.getX(), tank.getY(), bll.getX(), bll.getY()) <= Utils.HEAR_SOUND_RADIUS && !bll.isCollision())
                                     ((TankGame) game).soundManager.playBulletImpactTile();
-                                bll.setVisible(false);
                                 bll.setCollision(true);
                                 bll.getFireShotImpact().setX(bll.getX());
                                 bll.getFireShotImpact().setY(bll.getY());
@@ -633,7 +651,6 @@ public class WorldScreen extends Screen {
                         int score = tank.getScore() + 10;
                         sendReceive.writeObjectJSON(tank.jsonToSendPlayeScore(score));
                     }
-                    bll.setVisible(false);
                     bll.setCollision(true);
                     bll.getFireShotImpact().setX(bll.getX());
                     bll.getFireShotImpact().setY(bll.getY());

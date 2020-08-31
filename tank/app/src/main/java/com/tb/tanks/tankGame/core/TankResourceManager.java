@@ -29,6 +29,8 @@ public class TankResourceManager
 
 	//tank
 	public static Bitmap Tank;
+	public static Bitmap Weapon;
+	public static Bitmap WeaponOther;
 	public static Bitmap TankOther;
 	public static Bitmap Bullet1;
 	public static Bitmap[] FireShotImpacts;
@@ -69,8 +71,10 @@ public class TankResourceManager
 		if (firstTimeCreate==true){
 			options.inPreferredConfig = Bitmap.Config.ARGB_4444;
 			//tanks
-			Tank = loadImage("tank/Tank_01_192x192.png");
-			TankOther = loadImage("tank/Tank_03_192x192.png");
+			Tank = loadImage("tank/Hull_03.png");
+			Weapon = loadImage("tank/weapon_03.png");
+			TankOther = loadImage("tank/Hull_03_other.png");
+			WeaponOther = loadImage("tank/weapon_03_other.png");
 
 			//bullet
 			Bullet1 = loadImage("tank/bullet1.png");

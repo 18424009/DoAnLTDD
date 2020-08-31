@@ -100,6 +100,7 @@ public class AndroidListView extends Component  {
 
     public void setDrawDiscovering(boolean drawDiscovering) {
         isDrawDiscovering = drawDiscovering;
+        listText = null;
     }
 
     public void setPaddingTop(float paddingTop) {
@@ -146,26 +147,28 @@ public class AndroidListView extends Component  {
     }
 
     private void drawItemString(Canvas g, int X, int Y){
-        float beginX = X + paddingLeft;
-        float beginY = Y + paddingTop;
-        float beginBtnY = paddingTop + 15;
-        int size = maxItemShow;
-        if(listText.length < size){
-            size = listText.length;
-        }
-        for(int i = currentItemIndex; i < currentItemIndex + size; i++){
-            if(listText.length - (currentItemIndex + 1)< maxItemShow){
-                size = listText.length - currentItemIndex;
+        if(listText != null) {
+            float beginX = X + paddingLeft;
+            float beginY = Y + paddingTop;
+            float beginBtnY = paddingTop + 15;
+            int size = maxItemShow;
+            if (listText.length < size) {
+                size = listText.length;
             }
-            if(listText.length - currentItemIndex + size < 0){
-                break;
+            for (int i = currentItemIndex; i < currentItemIndex + size; i++) {
+                if (listText.length - (currentItemIndex + 1) < maxItemShow) {
+                    size = listText.length - currentItemIndex;
+                }
+                if (listText.length - currentItemIndex + size < 0) {
+                    break;
+                }
+                g.drawBitmap(icons[i], beginX, beginY, null);
+                g.drawText(listText[i], beginX + test.getWidth() + 30, beginY + test.getHeight() / 2 + getTextSize() / 2, paintText);
+                lstBtnAttacks[i].y = (int) beginBtnY;
+                beginY += alignLine + icons[i].getHeight();
+                beginBtnY += alignLine + icons[i].getHeight();
+                lstBtnAttacks[i].draw(g, X, Y);
             }
-            g.drawBitmap(icons[i], beginX, beginY,null);
-            g.drawText(listText[i], beginX + test.getWidth() + 30 , beginY + test.getHeight()/2 + getTextSize()/2, paintText);
-            lstBtnAttacks[i].y = (int)beginBtnY;
-            beginY += alignLine + icons[i].getHeight();
-            beginBtnY += alignLine + icons[i].getHeight();
-            lstBtnAttacks[i].draw(g, X, Y);
         }
     }
 

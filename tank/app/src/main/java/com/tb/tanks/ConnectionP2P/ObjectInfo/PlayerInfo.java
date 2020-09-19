@@ -17,7 +17,9 @@ public class PlayerInfo {
     private float x;
     private float y;
     private float angle;
+    private float angleWeapon;
     private float degree;
+    private float degreeWeapon;
     private float power;
     private boolean isNotMove;
     private boolean isAdded;
@@ -35,7 +37,7 @@ public class PlayerInfo {
         isAdded = false;
         bullets = new Stack<>();
         fireShotFlames = new ArrayList<FireShotFlame>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             Bullet bll = new Bullet(null);
             bll.setDegree(degree);
             bll.setX(this.x);
@@ -106,9 +108,17 @@ public class PlayerInfo {
 
     public void setDegree(float degree) {
         this.degree = degree;
+    }
+
+    public float getDegreeWeapon() {
+        return degreeWeapon;
+    }
+
+    public void setDegreeWeapon(float degreeWeapon) {
+        this.degreeWeapon = degreeWeapon;
         for (Bullet bll : bullets) {
             if (!bll.isVisible()) {
-                bll.setDegree(degree);
+                bll.setDegree(degreeWeapon);
             }
         }
     }
@@ -149,6 +159,14 @@ public class PlayerInfo {
         this.angle = angle;
     }
 
+    public float getAngleWeapon() {
+        return angleWeapon;
+    }
+
+    public void setAngleWeapon(float angleWeapon) {
+        this.angleWeapon = angleWeapon;
+    }
+
     public float getPower() {
         return power;
     }
@@ -160,14 +178,14 @@ public class PlayerInfo {
     public void fire() {
         for (Bullet bll : bullets) {
             if (!bll.isVisible()) {
-                float rdi = (float) Math.toRadians(degree);
+                float rdi = (float) Math.toRadians(degreeWeapon);
                 float s = (float) Math.sin(rdi);
                 float c = (float) Math.cos(rdi);
-                float xnew = 0 * c + (getHeight() - 50) * s;
-                float ynew = 0 * s - (getHeight() - 50) * c;
+                float xnew = 0 * c + (getHeight()/2 + 35) * s;
+                float ynew = 0 * s - (getHeight()/2 + 35) * c;
                 bll.setX(x + xnew);
                 bll.setY(y + ynew);
-                bll.setDegree(degree);
+                bll.setDegree(degreeWeapon);
                 bll.setVisible(true);
                 break;
             }
@@ -189,7 +207,7 @@ public class PlayerInfo {
                 bll.update(null, deltaTime);
             }
         }
-        this.setDegree((float) Math.toDegrees(angle - Math.PI / 2));
+
     }
 
     public JSONObject serializeForUpdate() {
@@ -214,6 +232,7 @@ public class PlayerInfo {
             result.put("x", x);
             result.put("y", y);
             result.put("degree", degree);
+            result.put("degreeWeapon", degreeWeapon);
             result.put("score", score);
             result.put("bullets", jsonBulletsArray);
             result.put("heath", this.heath);

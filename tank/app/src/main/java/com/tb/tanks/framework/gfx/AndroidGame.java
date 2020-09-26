@@ -69,7 +69,10 @@ public abstract class AndroidGame extends Activity implements Game, JoyStick.Joy
 	protected Screen nextScreen=null;
 	protected boolean screenTransitionActive=false;
 	private JoyStick joyStick;
+	private JoyStick joyStickWeapon;
+
 	private JoyStickEvent joyStickEvent;
+	private JoyStickEvent joyStickEventWeapon;
 	private WifiManagerP2P wifiManagerP2P;
 	private ImageButton fireButton;
 	public CutoutHelper m_cutoutHelper = null;
@@ -161,25 +164,58 @@ public abstract class AndroidGame extends Activity implements Game, JoyStick.Joy
 		float density = getResources().getDisplayMetrics().density;
 
 		fireButton = new ImageButton(this);
-		FrameLayout.LayoutParams pr = new FrameLayout.LayoutParams((int)(70*density), (int)(70*density), Gravity.BOTTOM| Gravity.RIGHT);
-		pr.setMargins(0,0,50,50);
+		FrameLayout.LayoutParams pr = new FrameLayout.LayoutParams((int)(60*density), (int)(60*density), Gravity.BOTTOM| Gravity.RIGHT);
+		pr.setMargins(0,0,50,300);
 		fireButton.setLayoutParams(pr);
 		fireButton.setBackground(ContextCompat.getDrawable(this,R.drawable.round_button));
+
 
 		joyStick = new JoyStick(this);
 		joyStickEvent = new JoyStickEvent();
 
+		joyStickWeapon = new JoyStick(this);
+		joyStickEventWeapon = new JoyStickEvent();
+		FrameLayout.LayoutParams pr1 = new FrameLayout.LayoutParams((int)(110*density), (int)(110*density), Gravity.BOTTOM | Gravity.RIGHT);
+		pr1.setMargins(0,0,200,30);
+		joyStickWeapon.setLayoutParams(pr1);
+		//joyStickWeapon.setPadColor(Color.argb(50, 30,30,30));
+		joyStickWeapon.setPadBackground(R.drawable.pad_line_light_05);
+		joyStickWeapon.setButtonDrawable(R.drawable.pad_line_light_49);
+		joyStickWeapon.setListener(new JoyStick.JoyStickListener() {
+			@Override
+			public void onMove(JoyStick joyStick, double angle, double power, int direction) {
+				joyStickEventWeapon.angle = angle;
+				joyStickEventWeapon.power = power;
+				joyStickEventWeapon.direction = direction;
+			}
+
+			@Override
+			public void onTap() {
+
+			}
+
+			@Override
+			public void onDoubleTap() {
+
+			}
+		});
+
+
 
 		joyStick.setLayoutParams(new FrameLayout.LayoutParams((int)(130*density), (int)(130*density), Gravity.BOTTOM));
-		joyStick.setPadColor(Color.argb(50, 30,30,30));
+		//joyStick.setPadColor(Color.argb(50, 30,30,30));
+		joyStick.setPadBackground(R.drawable.pad_transparent_light_05);
+		joyStick.setButtonDrawable(R.drawable.pad_transparent_light_49);
 		joyStick.setListener(this);
 
 		joyStick.setVisibility(View.GONE);
 		fireButton.setVisibility(View.GONE);
+		joyStickWeapon.setVisibility(View.GONE);
 
 		//joyStick.setVisibility(View.GONE); //View.VISIBLE
 		game.addView(joyStick);
 		game.addView(fireButton);
+		game.addView(joyStickWeapon);
 		setContentView(game);
 		//we also use the PowerManager to define the wakeLock variable and we acquire and 
 		//release wakelock in the onResume and onPause methods, respectively. 
@@ -305,6 +341,14 @@ public abstract class AndroidGame extends Activity implements Game, JoyStick.Joy
 
 	public JoyStickEvent getJoyStickEvent(){return joyStickEvent;}
 
+	public JoyStickEvent getJoyStickEventWeapon() {
+		return joyStickEventWeapon;
+	}
+
+	public void setJoyStickEventWeapon(JoyStickEvent joyStickEventWeapon) {
+		this.joyStickEventWeapon = joyStickEventWeapon;
+	}
+
 	public void ShowJoyStick(final boolean visible){
 		this.runOnUiThread(new Runnable() {
 			@Override
@@ -313,6 +357,21 @@ public abstract class AndroidGame extends Activity implements Game, JoyStick.Joy
 					joyStick.setVisibility(View.VISIBLE);
 				}else{
 					joyStick.setVisibility(View.GONE);
+				}
+			}
+
+		});
+
+	}
+
+	public void ShowJoyStickWeapon(final boolean visible){
+		this.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if(visible){
+					joyStickWeapon.setVisibility(View.VISIBLE);
+				}else{
+					joyStickWeapon.setVisibility(View.GONE);
 				}
 			}
 
